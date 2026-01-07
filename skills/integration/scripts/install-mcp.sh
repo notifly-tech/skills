@@ -579,7 +579,7 @@ log "${BLUE}🔍 MCP 클라이언트를 감지합니다...${RESET}"
 detected_client=$(choose_client)
 
 if [ "$detected_client" != "unknown" ]; then
-  log "${GREEN}감지됨: $detected_client${RESET}"
+  log "${GREEN}감지됨: ${detected_client}${RESET}"
   config_path=$(get_config_path "$detected_client")
 
   if [ "$detected_client" = "claude" ]; then
@@ -588,7 +588,7 @@ if [ "$detected_client" != "unknown" ]; then
     log "${GREEN}✅ Notifly MCP 서버 설정이 완료되었습니다!${RESET}"
     log "${YELLOW}⚠️  중요: 변경 사항을 적용하려면 Claude Code를 재시작하세요.${RESET}"
   elif [ -n "$config_path" ]; then
-    log "${BLUE}$detected_client용 MCP 서버를 설정합니다...${RESET}"
+    log "${BLUE}${detected_client}용 MCP 서버를 설정합니다...${RESET}"
 
     if [ "$detected_client" = "codex" ]; then
       configure_codex "$config_path"
@@ -601,9 +601,9 @@ if [ "$detected_client" != "unknown" ]; then
     fi
 
     log "${GREEN}✅ Notifly MCP 서버 설정이 완료되었습니다!${RESET}"
-    log "${YELLOW}⚠️  중요: 변경 사항을 적용하려면 $detected_client를 재시작하세요.${RESET}"
+    log "${YELLOW}⚠️  중요: 변경 사항을 적용하려면 ${detected_client}를 재시작하세요.${RESET}"
   else
-    log "${YELLOW}⚠️  $detected_client의 설정 파일 경로를 결정할 수 없습니다${RESET}"
+    log "${YELLOW}⚠️  ${detected_client}의 설정 파일 경로를 결정할 수 없습니다${RESET}"
     log "${YELLOW}수동으로 설정하세요. 안내는 references/mcp-integration.md를 참고하세요.${RESET}"
   fi
 else
