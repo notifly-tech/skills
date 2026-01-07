@@ -2,12 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:notifly_flutter/notifly_flutter.dart';
 
-// Flutter in-app popup events example (official docs snippet):
+// Flutter 인앱 팝업 이벤트 예시(공식 문서 스니펫):
 // https://docs.notifly.tech/ko/advanced/inapp-popup-event-listener.md
 //
-// Notes:
-// - Initialize Notifly first.
-// - Subscribe to in-app events via NotiflyPlugin.inAppEvents.listen(...)
+// 참고:
+// - 먼저 Notifly를 초기화하세요.
+// - NotiflyPlugin.inAppEvents.listen(...)로 인앱 이벤트를 구독하세요.
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -26,34 +26,34 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future _initNotifly() async {
-    // Initialize Notifly SDK
+    // Notifly SDK 초기화
     await NotiflyPlugin.initialize(
       projectId: 'YOUR_PROJECT_ID',
       username: 'YOUR_USERNAME',
       password: 'YOUR_PASSWORD',
     );
 
-    // Subscribe to in-app message events
+    // 인앱 메시지 이벤트 구독
     _subscription = NotiflyPlugin.inAppEvents.listen(
       (event) {
-        print('InAppMessage event dispatched: ${event.eventName}');
-        print('Event params: ${event.eventParams}');
+        print('인앱 메시지 이벤트 발생: ${event.eventName}');
+        print('이벤트 파라미터: ${event.eventParams}');
 
-        // Handle specific events
+        // 이벤트별 처리
         switch (event.eventName) {
           case 'main_button_click':
-            // Handle main button click
+            // 메인 버튼 클릭 처리
             break;
           case 'close_button_click':
-            // Handle close button click
+            // 닫기 버튼 클릭 처리
             break;
         }
       },
       onError: (error, stackTrace) {
-        print('InAppMessage event error: $error');
-        print('Stack trace: $stackTrace');
+        print('인앱 메시지 이벤트 오류: $error');
+        print('스택 트레이스: $stackTrace');
       },
-      cancelOnError: false, // Continue listening even after an error
+      cancelOnError: false, // 오류가 발생해도 계속 수신
     );
   }
 
@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return const MaterialApp(
       home: Scaffold(
-        body: Center(child: Text('Notifly Flutter Integration Example')),
+        body: Center(child: Text('Notifly Flutter 연동 예시')),
       ),
     );
   }

@@ -1,12 +1,12 @@
-// iOS Notifly SDK Integration Example (Swift)
+// iOS Notifly SDK 연동 예시 (Swift)
 //
-// Source of truth:
-// - Docs: https://docs.notifly.tech/ko/developer-guide/ios-sdk.md
-// - Official example: https://github.com/team-michael/notifly-ios-sdk
+// 단일 기준(Source of Truth):
+// - 문서: https://docs.notifly.tech/ko/developer-guide/ios-sdk.md
+// - 공식 예시: https://github.com/team-michael/notifly-ios-sdk
 //
-// Notes:
-// - Notifly requires FirebaseApp to be initialized first.
-// - You must enable Push Notifications + Background Modes (Remote notifications, Background fetch).
+// 참고:
+// - Notifly는 FirebaseApp이 먼저 초기화되어 있어야 합니다.
+// - Push Notifications + Background Modes(Remote notifications, Background fetch)를 활성화해야 합니다.
 
 import Firebase
 import notifly_sdk
@@ -18,15 +18,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        // 1) Initialize Firebase
-        // Official sample calls FirebaseApp.configure() before requesting authorization:
+        // 1) Firebase 초기화
+        // 공식 샘플은 권한 요청 전에 FirebaseApp.configure()를 호출합니다:
         // https://github.com/team-michael/notifly-ios-sdk
         FirebaseApp.configure()
 
-        // 2) Request notification authorization, then register for remote notifications
+        // 2) 알림 권한 요청 후 remote notifications 등록
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             if let error = error {
-                print("Failed to request authorization: \(error)")
+                print("알림 권한 요청 실패: \(error)")
                 return
             }
 
@@ -37,15 +37,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        // 3) Initialize Notifly
-        // Get these values from Notifly Console (Project Settings > SDK Credentials)
+        // 3) Notifly 초기화
+        // 값은 Notifly 콘솔(Project Settings > SDK Credentials)에서 확인하세요.
         Notifly.initialize(
             projectId: "YOUR_PROJECT_ID",
             username: "YOUR_USERNAME",
             password: "YOUR_PASSWORD"
         )
         
-        // 4) Set UNUserNotificationCenter delegate (push click + foreground handling)
+        // 4) UNUserNotificationCenter delegate 설정(푸시 클릭 + 포그라운드 처리)
         UNUserNotificationCenter.current().delegate = self
         
         return true
@@ -55,7 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
-        // Forward APNs token to Notifly
+        // APNs 토큰을 Notifly로 전달
         Notifly.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
     }
     
@@ -63,11 +63,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         _ application: UIApplication,
         didFailToRegisterForRemoteNotificationsWithError error: Error
     ) {
-        // Forward APNs registration failure to Notifly
+        // APNs 등록 실패를 Notifly로 전달
         Notifly.application(application, didFailToRegisterForRemoteNotificationsWithError: error)
     }
     
-    // Push click handling
+    // 푸시 클릭 처리
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
@@ -77,7 +77,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         completionHandler()
     }
     
-    // Foreground push presentation handling
+    // 포그라운드 푸시 표시 옵션 처리
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,

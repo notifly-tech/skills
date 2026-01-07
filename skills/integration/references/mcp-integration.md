@@ -1,17 +1,17 @@
-# Notifly MCP Server
+# Notifly MCP 서버
 
-Notifly MCP Server implements the
-[Model Context Protocol (MCP)](https://modelcontextprotocol.io/) to enable LLMs
-to search Notifly documentation and SDK code.
+Notifly MCP 서버는
+[Model Context Protocol(MCP)](https://modelcontextprotocol.io/)을 구현하여,
+LLM이 Notifly 문서와 SDK 코드를 검색할 수 있게 합니다.
 
-## Integration Guide
+## 연동 가이드
 
-### Install
+### 설치
 
-You generally do **not** need a global install. The recommended setup runs the
-server via `npx` from your MCP client config.
+일반적으로 전역 설치는 **필요하지 않습니다**. 권장 설정은 MCP 클라이언트
+설정에서 `npx`로 서버를 실행하는 방식입니다.
 
-Optional global install (only if your client requires a direct binary on PATH):
+선택적 전역 설치(클라이언트가 PATH에 있는 바이너리를 직접 요구하는 경우에만):
 
 - **npm**:
 
@@ -25,12 +25,12 @@ npm i -g notifly-mcp-server@latest
 yarn global add notifly-mcp-server@latest
 ```
 
-### Configure .mcp.json
+### `.mcp.json` 설정
 
-Create or update the `.mcp.json` at your project root (or the configuration
-location your MCP client uses).
+프로젝트 루트(또는 MCP 클라이언트가 사용하는 설정 위치)에 `.mcp.json`을
+생성/수정하세요.
 
-Recommended configuration using `npx`:
+`npx`를 사용하는 권장 설정:
 
 ```json
 {
@@ -43,26 +43,25 @@ Recommended configuration using `npx`:
 }
 ```
 
-### Important: Server name affects tool namespace
+### 중요: 서버 이름은 툴 네임스페이스에 영향을 줍니다
 
-Most MCP clients expose tools with a prefix that matches the **server name**.
-For example, naming the server `notifly-mcp-server` yields tools like:
+대부분의 MCP 클라이언트는 **서버 이름**을 prefix로 툴을 노출합니다. 예를 들어
+서버 이름을 `notifly-mcp-server`로 지정하면 다음과 같은 툴이 생깁니다:
 
 - `notifly-mcp-server:search_docs`
 - `notifly-mcp-server:search_sdk`
 
-If you name the server something else (e.g. `notifly`), your tools will appear
-as `notifly:*` and skills that expect `notifly-mcp-server:*` will think the
-server is missing.
+서버 이름을 다른 것으로 지정하면(예: `notifly`) 툴이 `notifly:*`로 노출되며,
+`notifly-mcp-server:*`를 기대하는 스킬은 서버가 없다고 판단할 수 있습니다.
 
-### Use Notifly MCP Server with Popular MCP Clients and IDEs
+### 주요 MCP 클라이언트/IDE에서 Notifly MCP 서버 사용
 
 #### Android Studio
 
-**Option 1: GitHub Copilot plugin in Android Studio**
+**옵션 1: Android Studio용 GitHub Copilot 플러그인**
 
 1. Settings > Tools > GitHub Copilot > Model Context Protocol (MCP) > Configure.
-2. Edit `mcp.json`:
+2. `mcp.json` 수정:
 
 ```json
 {
@@ -75,10 +74,10 @@ server is missing.
 }
 ```
 
-**Option 2: Using MCP Server plugin from JetBrains**
+**옵션 2: JetBrains의 MCP Server 플러그인 사용**
 
-1. Install "MCP Server" plugin from JetBrains.
-2. Configure client:
+1. JetBrains에서 "MCP Server" 플러그인을 설치합니다.
+2. 클라이언트 설정:
 
 ```json
 {
@@ -92,10 +91,10 @@ server is missing.
 }
 ```
 
-**Option 3: Gemini in Android Studio**
+**옵션 3: Android Studio의 Gemini**
 
-1. [Add an MCP server to Gemini](https://developer.android.com/studio/gemini/add-mcp-server).
-2. Use standard configuration:
+1. [Gemini에 MCP 서버 추가하기](https://developer.android.com/studio/gemini/add-mcp-server).
+2. 표준 설정을 사용합니다:
 
 ```json
 {
@@ -110,10 +109,10 @@ server is missing.
 
 #### Xcode
 
-**Option 1: GitHub Copilot for Xcode**
+**옵션 1: Xcode용 GitHub Copilot**
 
 1. Settings > MCP Configuration > Edit Config.
-2. Add:
+2. 추가:
 
 ```json
 {
@@ -126,9 +125,9 @@ server is missing.
 }
 ```
 
-**Option 2: XcodeBuildMCP**
+**옵션 2: XcodeBuildMCP**
 
-1. Add to your MCP client:
+1. MCP 클라이언트에 추가:
 
 ```json
 {
@@ -147,10 +146,10 @@ server is missing.
 
 #### Cursor
 
-**Manual setup**
+**수동 설정**
 
 1. Cursor Settings > Tool & MCP > New MCP Server.
-2. Paste JSON and restart:
+2. JSON을 붙여넣고 재시작:
 
 ```json
 {
@@ -165,10 +164,10 @@ server is missing.
 
 #### Amazon Q
 
-**Manual setup**
+**수동 설정**
 
-1. Open `~/.aws/amazonq/agents/default.json`.
-2. Add to `mcpServers`:
+1. `~/.aws/amazonq/agents/default.json` 열기
+2. `mcpServers`에 추가:
 
 ```json
 "mcpServers": {
@@ -181,10 +180,10 @@ server is missing.
 
 #### Google Antigravity
 
-**Manual setup**
+**수동 설정**
 
 1. Agent tab > ellipsis (...) > MCP Server > Manage MCP Servers.
-2. Add to `mcp_config.json`:
+2. `mcp_config.json`에 추가:
 
 ```json
 {
@@ -199,10 +198,10 @@ server is missing.
 
 #### VS Code
 
-**Manual setup**
+**수동 설정**
 
-1. Open `~/.vscode/mcp.json`.
-2. Paste JSON and restart:
+1. `~/.vscode/mcp.json` 열기
+2. JSON을 붙여넣고 재시작:
 
 ```json
 {
@@ -217,13 +216,13 @@ server is missing.
 
 #### Claude Code CLI
 
-**Command Line:**
+**커맨드 라인:**
 
 ```bash
 claude mcp add --transport stdio notifly-mcp-server -- npx -y notifly-mcp-server@latest
 ```
 
-**Marketplace:**
+**마켓플레이스:**
 
 ```bash
 /plugin marketplace add notifly-tech/notifly-mcp-server
@@ -231,15 +230,15 @@ claude mcp add --transport stdio notifly-mcp-server -- npx -y notifly-mcp-server
 
 #### Codex CLI
 
-**Setup**
+**설정**
 
-1. Open `~/.codex/config.toml`.
-2. Add and restart:
+1. `~/.codex/config.toml` 열기
+2. 추가 후 재시작:
 
 ```toml
 [mcp_servers]
-  # IMPORTANT: keep this name as "notifly-mcp-server" so tools show up as
-  # `notifly-mcp-server:*` (and not `notifly:*`).
+  # 중요: 이 이름을 "notifly-mcp-server"로 유지해야 툴이
+  # `notifly-mcp-server:*`로 노출됩니다 (`notifly:*`가 아님).
   [mcp_servers."notifly-mcp-server"]
   command = "npx"
   args = ["-y", "notifly-mcp-server@latest"]
@@ -247,10 +246,10 @@ claude mcp add --transport stdio notifly-mcp-server -- npx -y notifly-mcp-server
 
 #### Kiro CLI
 
-**Setup**
+**설정**
 
-1. Open `.kiro/settings/mcp.json`.
-2. Add:
+1. `.kiro/settings/mcp.json` 열기
+2. 추가:
 
 ```json
 {
@@ -265,16 +264,16 @@ claude mcp add --transport stdio notifly-mcp-server -- npx -y notifly-mcp-server
 
 #### Amp
 
-**Setup**
+**설정**
 
-Amp uses `amp.mcpServers` in VS Code settings files. Configure in either:
+Amp는 VS Code 설정 파일에서 `amp.mcpServers`를 사용합니다. 아래 중 하나에
+설정하세요:
 
-- **Workspace settings**: `.vscode/settings.json` (recommended for
-  project-specific setup)
-- **User settings**: `~/.vscode/settings.json` (for global setup)
+- **워크스페이스 설정**: `.vscode/settings.json` (프로젝트별 설정 권장)
+- **유저 설정**: `~/.vscode/settings.json` (전역 설정)
 
-1. Open `.vscode/settings.json` (create if it doesn't exist).
-2. Add the configuration:
+1. `.vscode/settings.json` 열기(없으면 생성)
+2. 다음 설정 추가:
 
 ```json
 {
@@ -287,23 +286,23 @@ Amp uses `amp.mcpServers` in VS Code settings files. Configure in either:
 }
 ```
 
-3. Restart Amp or reload the VS Code window.
+3. Amp를 재시작하거나 VS Code 창을 reload 하세요.
 
-**Note**: The server name `notifly-mcp-server` ensures tools appear as
-`notifly-mcp-server:*` (e.g., `notifly-mcp-server:search_sdk`,
-`notifly-mcp-server:search_docs`). See
-[Amp MCP documentation](https://ampcode.com/manual#mcp) for more details.
+**참고**: 서버 이름을 `notifly-mcp-server`로 유지하면 툴이
+`notifly-mcp-server:*`로 노출됩니다(예: `notifly-mcp-server:search_sdk`,
+`notifly-mcp-server:search_docs`). 자세한 내용은
+[Amp MCP 문서](https://ampcode.com/manual#mcp)를 참고하세요.
 
 #### OpenCode
 
-**Setup**
+**설정**
 
-OpenCode uses `opencode.json` or `opencode.jsonc` files in your project root.
-See [OpenCode MCP documentation](https://opencode.ai/docs/mcp-servers/) for
-details.
+OpenCode는 프로젝트 루트의 `opencode.json` 또는 `opencode.jsonc`를 사용합니다.
+자세한 내용은 [OpenCode MCP 문서](https://opencode.ai/docs/mcp-servers/)를
+참고하세요.
 
-1. Open `opencode.json` or `opencode.jsonc` (create if it doesn't exist).
-2. Add the configuration:
+1. `opencode.json` 또는 `opencode.jsonc` 열기(없으면 생성)
+2. 다음 설정 추가:
 
 ```json
 {
@@ -318,9 +317,9 @@ details.
 }
 ```
 
-3. Restart OpenCode or reload the configuration.
+3. OpenCode를 재시작하거나 설정을 reload 하세요.
 
-**Note**: The server name `notifly-mcp-server` ensures tools appear as
-`notifly-mcp-server:*` (e.g., `notifly-mcp-server:search_sdk`,
-`notifly-mcp-server:search_docs`). You can reference the server in prompts with
-`use notifly-mcp-server` or add it to your `AGENTS.md` file.
+**참고**: 서버 이름을 `notifly-mcp-server`로 유지하면 툴이
+`notifly-mcp-server:*`로 노출됩니다(예: `notifly-mcp-server:search_sdk`,
+`notifly-mcp-server:search_docs`). 또한 프롬프트에서 `use notifly-mcp-server`로
+서버를 참조하거나, `AGENTS.md`에 추가할 수 있습니다.

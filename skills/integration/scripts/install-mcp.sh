@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
-# Notifly MCP Server Installer
+# Notifly MCP 서버 설치 스크립트
 #
-# Usage:
+# 사용법:
 #   bash scripts/install-mcp.sh
 #
 
@@ -24,27 +24,27 @@ log_err() {
 
 usage() {
   cat <<'EOF'
-Notifly MCP Server Installer
+Notifly MCP 서버 설치 스크립트
 
-Usage:
+사용법:
   bash scripts/install-mcp.sh [--client <client>]
 
-Options:
-  --client <client>      Explicitly select the MCP client to configure.
-                         Supported: claude, claude-code, opencode, amp, codex, cursor, vscode
-  --help                 Show this help.
+옵션:
+  --client <client>      설정할 MCP 클라이언트를 명시적으로 선택합니다.
+                         지원: claude, claude-code, opencode, amp, codex, cursor, vscode
+  --help                 이 도움말을 표시합니다.
 
-Environment:
-  NOTIFLY_MCP_CLIENT         Same as --client (takes precedence).
+환경 변수:
+  NOTIFLY_MCP_CLIENT         --client와 동일(우선 적용).
 
-Notes:
-  If multiple MCP clients are detected on this machine, you MUST pass --client
-  (or set NOTIFLY_MCP_CLIENT). A shell script cannot reliably know "which client is
-  currently running" on a machine with multiple clients installed.
+참고:
+  이 머신에서 MCP 클라이언트가 여러 개 감지되면, 반드시 --client를 전달해야 합니다
+  (또는 NOTIFLY_MCP_CLIENT를 설정). 쉘 스크립트만으로는 여러 클라이언트가 설치된
+  환경에서 "현재 실행 중인 클라이언트"를 신뢰성 있게 판별할 수 없습니다.
 EOF
 }
 
-# Parse args/env
+# 인자/환경 변수 파싱
 CLIENT_OVERRIDE="${NOTIFLY_MCP_CLIENT:-}"
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -60,7 +60,7 @@ while [ $# -gt 0 ]; do
       CLIENT_OVERRIDE="${1#*=}"
       ;;
     *)
-      log_err "${YELLOW}⚠️  Unknown argument: $1${RESET}"
+      log_err "${YELLOW}⚠️  알 수 없는 인자: $1${RESET}"
       usage
       exit 2
       ;;
@@ -76,7 +76,7 @@ validate_client() {
   esac
 }
 
-# Detect platform
+# 플랫폼 감지
 detect_platform() {
   case "$(uname -s)" in
     Darwin*) echo "darwin" ;;
@@ -86,7 +86,7 @@ detect_platform() {
   esac
 }
 
-# Get config path for different clients
+# 클라이언트별 설정 파일 경로 조회
 get_config_path() {
   local client=$1
   local home="${HOME:-$HOME}"
@@ -94,14 +94,14 @@ get_config_path() {
 
   case "$client" in
     claude-code)
-      # Claude Code CLI manages MCP via `claude mcp ...` commands (no direct config file here)
+      # Claude Code CLI는 `claude mcp ...` 명령으로 MCP를 관리합니다(직접 편집할 설정 파일 없음).
       echo ""
       ;;
     codex)
       echo "${home}/.codex/config.toml"
       ;;
     cursor)
-      # Check project-level first
+      # 프로젝트 레벨 설정을 우선 확인
       if [ -f ".cursor/mcp.json" ]; then
         echo ".cursor/mcp.json"
       else
@@ -109,33 +109,33 @@ get_config_path() {
       fi
       ;;
     claude)
-      # Alias for Claude Code
+      # Claude Code 별칭
       echo ""
       ;;
     vscode)
       echo "${home}/.vscode/mcp.json"
       ;;
     amp)
-      # Amp uses VS Code settings.json format
-      # Check workspace settings first, then user settings
+      # Amp는 VS Code settings.json 포맷을 사용
+      # 워크스페이스 설정을 우선 확인한 뒤, 유저 설정 확인
       if [ -f ".vscode/settings.json" ]; then
         echo ".vscode/settings.json"
       elif [ -f "${home}/.vscode/settings.json" ]; then
         echo "${home}/.vscode/settings.json"
       else
-        # Default to workspace settings
+        # 기본값: 워크스페이스 설정
         echo ".vscode/settings.json"
       fi
       ;;
     opencode)
-      # OpenCode uses opencode.json or opencode.jsonc in project root
-      # Check for .jsonc first (preferred), then .json
+      # OpenCode는 프로젝트 루트의 opencode.json 또는 opencode.jsonc를 사용
+      # .jsonc를 먼저 확인(권장)한 뒤, .json 확인
       if [ -f "opencode.jsonc" ]; then
         echo "opencode.jsonc"
       elif [ -f "opencode.json" ]; then
         echo "opencode.json"
       else
-        # Default to .jsonc
+        # 기본값: .jsonc
         echo "opencode.jsonc"
       fi
       ;;
@@ -145,26 +145,26 @@ get_config_path() {
   esac
 }
 
-# Configure MCP for Claude Code CLI
+# Claude Code CLI용 MCP 설정
 configure_claude_code() {
   if ! command -v claude &> /dev/null; then
-    log "${RED}❌ Claude CLI not found on PATH.${RESET}"
+    log "${RED}❌ PATH에서 claude CLI를 찾을 수 없습니다.${RESET}"
     exit 1
   fi
 
-  # Best-effort: avoid failing if already configured.
-  # If list isn't supported, we'll just attempt add.
+  # 최선의 시도: 이미 설정되어 있다면 실패하지 않도록 합니다.
+  # list가 지원되지 않으면 add를 그대로 시도합니다.
   if claude mcp list 2>/dev/null | grep -q "notifly-mcp-server"; then
-    log "${GREEN}✔ Notifly MCP Server already configured in Claude Code${RESET}"
+    log "${GREEN}✔ Claude Code에 Notifly MCP 서버가 이미 설정되어 있습니다${RESET}"
     return 0
   fi
 
-  # Configure via CLI (non-interactive)
+  # CLI로 설정(비대화형)
   claude mcp add --transport stdio notifly-mcp-server -- npx -y notifly-mcp-server@latest
-  log "${GREEN}✔ Configured Notifly MCP Server in Claude Code${RESET}"
+  log "${GREEN}✔ Claude Code에 Notifly MCP 서버를 설정했습니다${RESET}"
 }
 
-# Configure MCP for Codex (TOML format)
+# Codex용 MCP 설정(TOML 포맷)
 configure_codex() {
   local config_path="$1"
   local config_dir=$(dirname "$config_path")
@@ -175,27 +175,27 @@ configure_codex() {
     cat > "$config_path" <<'EOF'
 [mcp_servers]
 EOF
-    log "${GREEN}✔ Created Codex config file${RESET}"
+    log "${GREEN}✔ Codex 설정 파일을 생성했습니다${RESET}"
   fi
 
-  # Check if already configured
+  # 이미 설정되어 있는지 확인
   if grep -q "notifly-mcp-server" "$config_path" 2>/dev/null; then
-    log "${GREEN}✔ Notifly MCP Server already configured in Codex${RESET}"
+    log "${GREEN}✔ Codex에 Notifly MCP 서버가 이미 설정되어 있습니다${RESET}"
     return 0
   fi
 
-  # If user previously configured Codex under a different name (e.g. "notifly"),
-  # tools will appear as "notifly:*" instead of the expected "notifly-mcp-server:*".
-  # We add the correct server name, but also warn.
+  # 사용자가 Codex를 다른 이름(예: "notifly")으로 설정해둔 경우,
+  # 툴이 "notifly-mcp-server:*"가 아닌 "notifly:*"로 노출될 수 있습니다.
+  # 올바른 서버 이름을 추가하되, 경고를 출력합니다.
   if grep -q "\[mcp_servers\.notifly\]" "$config_path" 2>/dev/null; then
-    log "${YELLOW}⚠️  Found an existing Codex MCP entry named \"notifly\".${RESET}"
-    log "${YELLOW}   This makes tools show up as \"notifly:*\" (not \"notifly-mcp-server:*\").${RESET}"
-    log "${YELLOW}   Adding the correct \"notifly-mcp-server\" entry now.${RESET}"
+    log "${YELLOW}⚠️  \"notifly\"라는 이름의 기존 Codex MCP 엔트리를 발견했습니다.${RESET}"
+    log "${YELLOW}   이 경우 툴이 \"notifly:*\"로 노출될 수 있습니다(\"notifly-mcp-server:*\"가 아님).${RESET}"
+    log "${YELLOW}   올바른 \"notifly-mcp-server\" 엔트리를 추가합니다.${RESET}"
   fi
 
-  # Add configuration
+  # 설정 추가
   if grep -q "\[mcp_servers\]" "$config_path"; then
-    # Append to existing [mcp_servers] section
+    # 기존 [mcp_servers] 섹션에 추가
     cat >> "$config_path" <<'EOF'
 
   [mcp_servers."notifly-mcp-server"]
@@ -203,7 +203,7 @@ EOF
   args = ["-y", "notifly-mcp-server@latest"]
 EOF
   else
-    # Create new section
+    # 새 섹션 생성
     cat >> "$config_path" <<'EOF'
 [mcp_servers]
   [mcp_servers."notifly-mcp-server"]
@@ -212,10 +212,10 @@ EOF
 EOF
   fi
 
-  log "${GREEN}✔ Configured Notifly MCP Server in Codex config${RESET}"
+  log "${GREEN}✔ Codex 설정에 Notifly MCP 서버를 추가했습니다${RESET}"
 }
 
-# Configure MCP for Amp (uses amp.mcpServers in VS Code settings.json)
+# Amp용 MCP 설정( VS Code settings.json의 amp.mcpServers 사용 )
 configure_amp() {
   local config_path="$1"
   local config_dir=$(dirname "$config_path")
@@ -224,16 +224,16 @@ configure_amp() {
 
   if [ ! -f "$config_path" ]; then
     echo '{}' > "$config_path"
-    log "${GREEN}✔ Created Amp settings file${RESET}"
+    log "${GREEN}✔ Amp 설정 파일을 생성했습니다${RESET}"
   fi
 
-  # Check if already configured
+  # 이미 설정되어 있는지 확인
   if grep -q "notifly-mcp-server" "$config_path" 2>/dev/null; then
-    log "${GREEN}✔ Notifly MCP Server already configured in Amp${RESET}"
+    log "${GREEN}✔ Amp에 Notifly MCP 서버가 이미 설정되어 있습니다${RESET}"
     return 0
   fi
 
-  # Use node to safely update JSON/JSONC (VS Code settings often allow comments)
+  # node를 사용해 JSON/JSONC를 안전하게 갱신합니다(VS Code 설정은 주석을 허용하는 경우가 많음).
   if command -v node &> /dev/null; then
     node <<EOF
 const fs = require('fs');
@@ -242,7 +242,7 @@ let config = {};
 try {
   const content = fs.readFileSync(path, 'utf8');
   const stripJsonc = (input) => {
-    // Strips // and /* */ comments, but preserves anything inside strings.
+    // // 및 /* */ 주석을 제거하되, 문자열 내부 내용은 보존합니다.
     let out = '';
     let inStr = false;
     let esc = false;
@@ -306,9 +306,9 @@ config['amp.mcpServers']['notifly-mcp-server'] = {
 };
 fs.writeFileSync(path, JSON.stringify(config, null, 2) + '\n');
 EOF
-    log "${GREEN}✔ Configured Notifly MCP Server in Amp${RESET}"
+    log "${GREEN}✔ Amp에 Notifly MCP 서버를 설정했습니다${RESET}"
   else
-    log "${YELLOW}⚠️  Node.js not found. Please manually add to $config_path:${RESET}"
+    log "${YELLOW}⚠️  Node.js를 찾을 수 없습니다. $config_path에 수동으로 추가하세요:${RESET}"
     log "${BLUE}{${RESET}"
     log "${BLUE}  \"amp.mcpServers\": {${RESET}"
     log "${BLUE}    \"notifly-mcp-server\": {${RESET}"
@@ -320,35 +320,35 @@ EOF
   fi
 }
 
-# Configure MCP for OpenCode (uses opencode.json/jsonc with mcp section)
+# OpenCode용 MCP 설정(mcp 섹션이 있는 opencode.json/jsonc 사용)
 configure_opencode() {
   local config_path="$1"
 
   if [ ! -f "$config_path" ]; then
-    # Create new opencode.jsonc file
+    # 새 opencode.jsonc 파일 생성
     cat > "$config_path" <<'EOF'
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {}
 }
 EOF
-    log "${GREEN}✔ Created OpenCode config file${RESET}"
+    log "${GREEN}✔ OpenCode 설정 파일을 생성했습니다${RESET}"
   fi
 
-  # Check if already configured
+  # 이미 설정되어 있는지 확인
   if grep -q "notifly-mcp-server" "$config_path" 2>/dev/null; then
-    log "${GREEN}✔ Notifly MCP Server already configured in OpenCode${RESET}"
+    log "${GREEN}✔ OpenCode에 Notifly MCP 서버가 이미 설정되어 있습니다${RESET}"
     return 0
   fi
 
-  # Use node to safely update JSON/JSONC
+  # node를 사용해 JSON/JSONC를 안전하게 갱신
   if command -v node &> /dev/null; then
     node <<EOF
 const fs = require('fs');
 const path = '$config_path';
 let content = fs.readFileSync(path, 'utf8');
 const stripJsonc = (input) => {
-  // Strips // and /* */ comments, but preserves anything inside strings.
+  // // 및 /* */ 주석을 제거하되, 문자열 내부 내용은 보존합니다.
   let out = '';
   let inStr = false;
   let esc = false;
@@ -415,9 +415,9 @@ config.mcp['notifly-mcp-server'] = {
 };
 fs.writeFileSync(path, JSON.stringify(config, null, 2) + '\n');
 EOF
-    log "${GREEN}✔ Configured Notifly MCP Server in OpenCode${RESET}"
+    log "${GREEN}✔ OpenCode에 Notifly MCP 서버를 설정했습니다${RESET}"
   else
-    log "${YELLOW}⚠️  Node.js not found. Please manually add to $config_path:${RESET}"
+    log "${YELLOW}⚠️  Node.js를 찾을 수 없습니다. $config_path에 수동으로 추가하세요:${RESET}"
     log "${BLUE}{${RESET}"
     log "${BLUE}  \"mcp\": {${RESET}"
     log "${BLUE}    \"notifly-mcp-server\": {${RESET}"
@@ -430,7 +430,7 @@ EOF
   fi
 }
 
-# Configure MCP for JSON-based clients
+# JSON 기반 클라이언트용 MCP 설정
 configure_json_client() {
   local config_path="$1"
   local config_dir=$(dirname "$config_path")
@@ -439,16 +439,16 @@ configure_json_client() {
 
   if [ ! -f "$config_path" ]; then
     echo '{"mcpServers": {}}' > "$config_path"
-    log "${GREEN}✔ Created config file${RESET}"
+    log "${GREEN}✔ 설정 파일을 생성했습니다${RESET}"
   fi
 
-  # Check if already configured
+  # 이미 설정되어 있는지 확인
   if grep -q "notifly-mcp-server" "$config_path" 2>/dev/null; then
-    log "${GREEN}✔ Notifly MCP Server already configured${RESET}"
+    log "${GREEN}✔ Notifly MCP 서버가 이미 설정되어 있습니다${RESET}"
     return 0
   fi
 
-  # Use node to safely update JSON
+  # node를 사용해 JSON을 안전하게 갱신
   if command -v node &> /dev/null; then
     node <<EOF
 const fs = require('fs');
@@ -461,9 +461,9 @@ config.mcpServers['notifly-mcp-server'] = {
 };
 fs.writeFileSync(path, JSON.stringify(config, null, 2) + '\n');
 EOF
-    log "${GREEN}✔ Configured Notifly MCP Server${RESET}"
+    log "${GREEN}✔ Notifly MCP 서버를 설정했습니다${RESET}"
   else
-    log "${YELLOW}⚠️  Node.js not found. Please manually add to $config_path:${RESET}"
+    log "${YELLOW}⚠️  Node.js를 찾을 수 없습니다. $config_path에 수동으로 추가하세요:${RESET}"
     log "${BLUE}{${RESET}"
     log "${BLUE}  \"mcpServers\": {${RESET}"
     log "${BLUE}    \"notifly-mcp-server\": {${RESET}"
@@ -475,19 +475,19 @@ EOF
   fi
 }
 
-# Detect all matching clients (heuristics). Output one per line.
+# 조건에 맞는 클라이언트를 모두 감지(휴리스틱). 한 줄에 하나씩 출력합니다.
 detect_clients() {
-  # Claude Code CLI (supports `claude mcp ...`)
+  # Claude Code CLI (`claude mcp ...` 지원)
   if command -v claude &> /dev/null && claude mcp --help &> /dev/null; then
     echo "claude"
   fi
 
-  # OpenCode (project config files or opencode command)
+  # OpenCode (프로젝트 설정 파일 또는 opencode 커맨드)
   if [ -f "opencode.json" ] || [ -f "opencode.jsonc" ] || command -v opencode &> /dev/null; then
     echo "opencode"
   fi
 
-  # Amp (amp command or amp.mcpServers present)
+  # Amp (amp 커맨드 또는 amp.mcpServers 설정 존재)
   if command -v amp &> /dev/null || \
      grep -q "amp.mcpServers" ".vscode/settings.json" 2>/dev/null || \
      grep -q "amp.mcpServers" "${HOME}/.vscode/settings.json" 2>/dev/null; then
@@ -513,7 +513,7 @@ detect_clients() {
 choose_client() {
   if [ -n "${CLIENT_OVERRIDE:-}" ]; then
     if ! validate_client "$CLIENT_OVERRIDE"; then
-      log_err "${RED}❌ Invalid --client / NOTIFLY_MCP_CLIENT: ${CLIENT_OVERRIDE}${RESET}"
+      log_err "${RED}❌ 잘못된 --client / NOTIFLY_MCP_CLIENT: ${CLIENT_OVERRIDE}${RESET}"
       usage
       exit 2
     fi
@@ -540,18 +540,18 @@ choose_client() {
     return
   fi
 
-  # Multiple detected: we can't know which one is "currently running".
-  log_err "${YELLOW}⚠️  Multiple MCP clients detected on this machine:${RESET}"
+  # 여러 개가 감지되면, 어떤 클라이언트가 "현재 실행 중"인지 알 수 없습니다.
+  log_err "${YELLOW}⚠️  이 머신에서 여러 MCP 클라이언트가 감지되었습니다:${RESET}"
   printf "%s\n" "$detected" | sed 's/^/  - /' >&2
 
   if [ -t 0 ]; then
-    log_err "${BLUE}Select which client to configure:${RESET}"
+    log_err "${BLUE}설정할 클라이언트를 선택하세요:${RESET}"
     local options=()
     while IFS= read -r line; do options+=("$line"); done <<<"$detected"
     options+=("cancel")
     select opt in "${options[@]}"; do
       if [ "$opt" = "cancel" ] || [ -z "${opt:-}" ]; then
-        log_err "${YELLOW}Cancelled.${RESET}"
+        log_err "${YELLOW}취소했습니다.${RESET}"
         exit 2
       fi
       echo "$opt"
@@ -559,44 +559,36 @@ choose_client() {
     done
   fi
 
-  log_err "${RED}❌ Ambiguous MCP client selection in non-interactive mode.${RESET}"
-  log_err "${YELLOW}Please re-run with: bash scripts/install-mcp.sh --client <client>${RESET}"
+  log_err "${RED}❌ 비대화형 모드에서는 MCP 클라이언트를 자동으로 결정할 수 없습니다.${RESET}"
+  log_err "${YELLOW}다음과 같이 다시 실행하세요: bash scripts/install-mcp.sh --client <client>${RESET}"
   exit 2
 }
 
-log "${BLUE}📦 Installing Notifly MCP Server...${RESET}"
+log "${BLUE}🧩 Notifly MCP 서버 설정을 진행합니다...${RESET}"
 
-# Check for npm
-if ! command -v npm &> /dev/null; then
-  log "${RED}❌ npm is not installed or not in PATH.${RESET}"
-  log "${YELLOW}Please install Node.js and npm first: https://nodejs.org/${RESET}"
-  exit 1
+# 이 스크립트는 "설치"라기보다는, MCP 클라이언트 설정 파일에
+# `npx -y notifly-mcp-server@latest` 실행 구성을 추가합니다.
+# (따라서 여기서 npm 레지스트리 접근/패키지 조회를 강제하지 않습니다.)
+if ! command -v npx &> /dev/null && ! command -v npm &> /dev/null; then
+  log "${YELLOW}⚠️  npx/npm을 찾을 수 없습니다. 실행 시 Node.js가 필요할 수 있습니다.${RESET}"
+  log "${YELLOW}   필요하면 Node.js를 설치하세요: https://nodejs.org/${RESET}"
 fi
 
-# Install package (using npx, no need for global install)
-log "${BLUE}Verifying notifly-mcp-server is available...${RESET}"
-if npm view notifly-mcp-server@latest version &> /dev/null; then
-  log "${GREEN}✅ Package is available${RESET}"
-else
-  log "${RED}❌ Package not found on npm${RESET}"
-  exit 1
-fi
-
-# Auto-detect and configure
-log "${BLUE}🔍 Detecting MCP client...${RESET}"
+# 자동 감지 후 설정
+log "${BLUE}🔍 MCP 클라이언트를 감지합니다...${RESET}"
 detected_client=$(choose_client)
 
 if [ "$detected_client" != "unknown" ]; then
-  log "${GREEN}Detected: $detected_client${RESET}"
+  log "${GREEN}감지됨: ${detected_client}${RESET}"
   config_path=$(get_config_path "$detected_client")
 
   if [ "$detected_client" = "claude" ]; then
-    log "${BLUE}Configuring MCP server for Claude Code...${RESET}"
+    log "${BLUE}Claude Code용 MCP 서버를 설정합니다...${RESET}"
     configure_claude_code
-    log "${GREEN}✅ Successfully configured Notifly MCP Server!${RESET}"
-    log "${YELLOW}⚠️  IMPORTANT: Please RESTART Claude Code for the changes to take effect.${RESET}"
+    log "${GREEN}✅ Notifly MCP 서버 설정이 완료되었습니다!${RESET}"
+    log "${YELLOW}⚠️  중요: 변경 사항을 적용하려면 Claude Code를 재시작하세요.${RESET}"
   elif [ -n "$config_path" ]; then
-    log "${BLUE}Configuring MCP server for $detected_client...${RESET}"
+    log "${BLUE}${detected_client}용 MCP 서버를 설정합니다...${RESET}"
 
     if [ "$detected_client" = "codex" ]; then
       configure_codex "$config_path"
@@ -608,21 +600,21 @@ if [ "$detected_client" != "unknown" ]; then
       configure_json_client "$config_path"
     fi
 
-    log "${GREEN}✅ Successfully configured Notifly MCP Server!${RESET}"
-    log "${YELLOW}⚠️  IMPORTANT: Please RESTART $detected_client for the changes to take effect.${RESET}"
+    log "${GREEN}✅ Notifly MCP 서버 설정이 완료되었습니다!${RESET}"
+    log "${YELLOW}⚠️  중요: 변경 사항을 적용하려면 ${detected_client}를 재시작하세요.${RESET}"
   else
-    log "${YELLOW}⚠️  Could not determine config path for $detected_client${RESET}"
-    log "${YELLOW}Please configure manually. See references/mcp-integration.md for instructions.${RESET}"
+    log "${YELLOW}⚠️  ${detected_client}의 설정 파일 경로를 결정할 수 없습니다${RESET}"
+    log "${YELLOW}수동으로 설정하세요. 안내는 references/mcp-integration.md를 참고하세요.${RESET}"
   fi
 else
-  log "${YELLOW}⚠️  Could not auto-detect MCP client.${RESET}"
-  log "${BLUE}The package is ready to use. Configure manually:${RESET}"
-  log "${BLUE}  - OpenCode: Add to opencode.json or opencode.jsonc${RESET}"
-  log "${BLUE}  - Amp: Add to .vscode/settings.json or ~/.vscode/settings.json${RESET}"
-  log "${BLUE}  - Codex: Add to ~/.codex/config.toml${RESET}"
-  log "${BLUE}  - Cursor: Add to .cursor/mcp.json or ~/.cursor/mcp.json${RESET}"
-  log "${BLUE}  - Claude Code: Run: claude mcp add --transport stdio notifly-mcp-server -- npx -y notifly-mcp-server@latest${RESET}"
-  log "${BLUE}See references/mcp-integration.md for detailed instructions.${RESET}"
+  log "${YELLOW}⚠️  MCP 클라이언트를 자동으로 감지하지 못했습니다.${RESET}"
+  log "${BLUE}패키지는 사용할 준비가 되었습니다. 아래 중 해당하는 설정 파일에 수동으로 추가하세요:${RESET}"
+  log "${BLUE}  - OpenCode: opencode.json 또는 opencode.jsonc에 추가${RESET}"
+  log "${BLUE}  - Amp: .vscode/settings.json 또는 ~/.vscode/settings.json에 추가${RESET}"
+  log "${BLUE}  - Codex: ~/.codex/config.toml에 추가${RESET}"
+  log "${BLUE}  - Cursor: .cursor/mcp.json 또는 ~/.cursor/mcp.json에 추가${RESET}"
+  log "${BLUE}  - Claude Code: 실행: claude mcp add --transport stdio notifly-mcp-server -- npx -y notifly-mcp-server@latest${RESET}"
+  log "${BLUE}자세한 안내는 references/mcp-integration.md를 참고하세요.${RESET}"
 fi
 
-log "${GREEN}✅ Setup complete!${RESET}"
+log "${GREEN}✅ 설정이 완료되었습니다!${RESET}"

@@ -1,13 +1,13 @@
-// Android Notifly SDK Integration Example (Kotlin)
+// Android Notifly SDK 연동 예시 (Kotlin)
 //
-// Source of truth:
-// - Docs: https://docs.notifly.tech/ko/developer-guide/android-sdk.md
-// - Official example: https://github.com/team-michael/notifly-android-sdk
+// 단일 기준(Source of Truth):
+// - 문서: https://docs.notifly.tech/ko/developer-guide/android-sdk.md
+// - 공식 예시: https://github.com/team-michael/notifly-android-sdk
 //
-// Key points:
-// - Add JitPack repository
-// - Add dependency: implementation 'com.github.team-michael:notifly-android-sdk:<latest>'
-// - Initialize in Application.onCreate
+// 핵심 포인트:
+// - JitPack 저장소 추가
+// - 의존성 추가: implementation 'com.github.team-michael:notifly-android-sdk:<latest>'
+// - Application.onCreate에서 초기화
 
 package com.example.app
 
@@ -18,7 +18,7 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Official doc example (Kotlin):
+        // 공식 문서 예시(Kotlin):
         // https://docs.notifly.tech/ko/developer-guide/android-sdk.md
         Notifly.initialize(
             applicationContext,

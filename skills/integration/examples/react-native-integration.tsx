@@ -1,18 +1,18 @@
-// React Native Notifly SDK Integration Example
+// React Native Notifly SDK 연동 예시
 //
-// Source of truth:
-// - Docs: https://docs.notifly.tech/ko/developer-guide/react-native-sdk.md
-// - Official example: https://github.com/team-michael/notifly-react-native-sdk
-// - NPM package: https://www.npmjs.com/package/notifly-sdk
+// 단일 기준(Source of Truth):
+// - 문서: https://docs.notifly.tech/ko/developer-guide/react-native-sdk.md
+// - 공식 예시: https://github.com/team-michael/notifly-react-native-sdk
+// - NPM 패키지: https://www.npmjs.com/package/notifly-sdk
 //
-// Notes:
-// - React Native integration requires native setup on iOS/Android (AppDelegate.mm / Application).
-// - After native setup, you can use the JS API from `notifly-sdk`.
+// 참고:
+// - React Native 연동에는 iOS/Android 네이티브 설정(AppDelegate.mm / Application)이 필요합니다.
+// - 네이티브 설정 이후 `notifly-sdk`의 JS API를 사용할 수 있습니다.
 
-// @ts-expect-error - example file; `notifly-sdk` is installed in the consumer app, not this repo
+// @ts-expect-error - 예시 파일입니다. `notifly-sdk`는 이 레포가 아니라 실제 앱 프로젝트에 설치됩니다.
 import notifly from "notifly-sdk";
 
-// Official SDK sample shows setUserId / setUserProperties / setEmail / setPhoneNumber / setTimezone:
+// 공식 SDK 샘플에는 setUserId / setUserProperties / setEmail / setPhoneNumber / setTimezone가 포함됩니다:
 // https://github.com/team-michael/notifly-react-native-sdk/blob/main/example/src/MyPage.js
 
 export async function setUserIdExample(userID?: string) {

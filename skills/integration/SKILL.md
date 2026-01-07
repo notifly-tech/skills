@@ -2,39 +2,32 @@
 name: notifly-integration
 description:
   노티플라이(Notifly) 모바일 SDK를 iOS, Android, Flutter, React Native
-  프로젝트에 연동합니다. 공식 Notifly 문서와 SDK 샘플을 단일 기준(Source of
-  Truth)으로 삼아 설치/초기화/MCP 설정/검증/트러블슈팅을 단계별로 안내합니다.
+  프로젝트에 연동합니다. 공식 Notifly 문서와 SDK 샘플을 단일 기준으로 삼아
+  설치/초기화/MCP 설정/검증/트러블슈팅을 단계별로 안내합니다.
 ---
 
 # Notifly SDK 연동 스킬
-
-**언어 / Language**
-
-- **한국어(기본)**: `SKILL.md`
-- **English**: `SKILL.en.md`
-- **규칙**: 사용자가 영어로 질문하면 `SKILL.en.md`를 따르세요. 그렇지 않다면 이
-  파일을 따르세요.
 
 사용자가 **Notifly SDK**를 설치/설정/연동하려고 할 때 이 스킬을 사용하세요.
 대상은:
 
 - 푸시 알림
-- 인앱 팝업(In-app) 메시지
+- 인앱 팝업 메시지
 - 유저 식별/유저 프로퍼티
 - 이벤트 트래킹(플랫폼 SDK가 지원하는 범위)
 
 ## 연동 전략 (MCP 우선)
 
-이 스킬은 항상 **MCP-first**로 동작하여, 최신의 검증된 문서/SDK 소스를 기준으로
+이 스킬은 항상 **MCP 우선**으로 동작하여, 최신의 검증된 문서/SDK 소스를 기준으로
 의사결정합니다.
 
-### Step 1: MCP 사용 가능 여부 확인
+### 1단계: MCP 사용 가능 여부 확인
 
 - Notifly MCP 도구가 있는지 확인:
   - `notifly-mcp-server:search_docs`
   - `notifly-mcp-server:search_sdk`
 
-### Step 2: 기본 경로 (MCP 사용 가능)
+### 2단계: 기본 경로 (MCP 사용 가능)
 
 - `notifly-mcp-server:search_docs`로 대상 플랫폼의 **공식 설치/초기화 단계**를
   확인
@@ -42,7 +35,7 @@ description:
   확인
 - MCP 결과가 존재하면 이를 **단일 기준**으로 취급 (추측 금지)
 
-### Step 3: 대체 경로 (MCP 사용 불가)
+### 3단계: 대체 경로 (MCP 사용 불가)
 
 - 이 레포의 정적 자료를 사용:
   - `references/`: 체크리스트/설명/문제 해결
@@ -70,7 +63,7 @@ Cursor, Claude Code, Codex, Amp 등 AI IDE에서 이 스킬을 사용할 때:
 
 ## 연동 워크플로우
 
-### Phase 0: MCP 설정 (선택이지만 권장)
+### 0단계: MCP 설정 (선택이지만 권장)
 
 MCP 도구가 없다면 먼저 `notifly-mcp-server`를 구성하세요:
 
@@ -78,7 +71,7 @@ MCP 도구가 없다면 먼저 `notifly-mcp-server`를 구성하세요:
 - 이 레포: `references/mcp-integration.md`
 - 자동 설치/구성: `bash skills/integration/scripts/install-mcp.sh --help`
 
-### Phase 1: 사전 준비(필수 확인)
+### 1단계: 사전 준비(필수 확인)
 
 진행 전 반드시 확인:
 
@@ -94,7 +87,7 @@ MCP 도구가 없다면 먼저 `notifly-mcp-server`를 구성하세요:
 - React Native:
   `https://docs.notifly.tech/ko/developer-guide/react-native-sdk.md`
 
-### Phase 2: 자격 증명(SDK)
+### 2단계: 자격 증명(SDK)
 
 Notifly Mobile SDK 자격 증명:
 
@@ -105,12 +98,12 @@ Notifly Mobile SDK 자격 증명:
 Notifly 콘솔에서 확인: `https://console.notifly.tech/` → Project Settings → SDK
 credentials.
 
-**Best practice**:
+**권장 사항**:
 
 - 자격 증명을 소스에 하드코딩/커밋하지 마세요.
 - 플랫폼에 맞는 런타임/빌드타임 시크릿 주입 방식을 사용하세요.
 
-### Phase 3: 플랫폼 식별(프로젝트 타입)
+### 3단계: 플랫폼 식별(프로젝트 타입)
 
 프로젝트가 어느 플랫폼인지 식별:
 
@@ -126,7 +119,7 @@ credentials.
 - **React Native** 또는 **Flutter**가 확인되면, 네이티브 `ios/`, `android/`가
   존재해도 **RN/Flutter를 1차 플랫폼**으로 취급합니다.
 
-### Phase 4: SDK 설치 (플랫폼별)
+### 4단계: SDK 설치 (플랫폼별)
 
 아래 “플랫폼 플레이북”을 기준으로 진행합니다. 가능한 한 공식 문서의 표현을
 그대로 따르고, API는 MCP로 확인하세요.
@@ -149,8 +142,8 @@ credentials.
 **초기화(공식 패턴)**:
 
 - `AppDelegate`에서 `FirebaseApp.configure()` 및 Notifly 초기화 수행
-- 알림 권한 요청 후 remote notifications 등록
-- `UNUserNotificationCenter` delegate 설정
+- 알림 권한 요청 후 원격 알림 등록
+- `UNUserNotificationCenter` 델리게이트 설정
 - APNs 토큰/푸시 콜백을 Notifly로 전달
 
 공식 가이드: `https://docs.notifly.tech/ko/developer-guide/ios-sdk.md`
@@ -161,7 +154,7 @@ credentials.
 
 **설치(공식)**:
 
-- JitPack repository 추가
+- JitPack 저장소 추가
 - 의존성 추가:
   `implementation 'com.github.team-michael:notifly-android-sdk:<latest>'`
 
@@ -193,7 +186,7 @@ credentials.
 
 - `Firebase.initializeApp()` 보장
 - `await NotiflyPlugin.initialize(projectId: ..., username: ..., password: ...)`
-- (선택) 콘솔에서 “자동 권한 요청”이 OFF인 경우:
+- (선택) 콘솔에서 “자동 권한 요청”이 비활성화된 경우:
   `await NotiflyPlugin.requestPermission()`
 - (선택) 인앱 팝업 이벤트 구독(공식 예시):
   `NotiflyPlugin.inAppEvents.listen(...)`
@@ -223,7 +216,7 @@ credentials.
 
 예시: `examples/react-native-integration.tsx`
 
-### Phase 5: SDK 초기화 위치 확정(레포 기준 증빙)
+### 5단계: SDK 초기화 위치 확정(레포 기준 증빙)
 
 이 단계는 “어디에 코드를 넣는지”와 “레포에서 증명 가능한지”를 점검합니다.
 
@@ -260,7 +253,7 @@ credentials.
   연동 수행
 - **JS**: 공식 RN SDK 샘플 패턴대로 API 사용(예시 파일 참조)
 
-### Phase 6: 검증(필수)
+### 6단계: 검증(필수)
 
 1. 스크립트 실행(앱 프로젝트 루트에서):
 
@@ -272,7 +265,7 @@ credentials.
 - 푸시 토큰 등록(네이티브) 확인
 - Notifly 콘솔에서 이벤트/기기 등록 확인
 
-### Phase 7: 플랫폼별 레포 검증 체크리스트
+### 7단계: 플랫폼별 레포 검증 체크리스트
 
 #### iOS
 
@@ -300,7 +293,7 @@ credentials.
 - 공식 문서대로 네이티브 연동 완료
 - JS 호출이 공식 샘플 패턴과 일치
 
-### Phase 8: 문서화
+### 8단계: 문서화
 
 연동 후 README/내부 문서에 다음을 기록:
 
@@ -315,10 +308,10 @@ credentials.
 
 ## 점진적 공개(Progressive Disclosure)
 
-- **Level 1**: `SKILL.md` / `SKILL.ko.md`
-- **Level 2**: `references/`
-- **Level 3**: `examples/`
-- **Level 4**: `scripts/`
+- **레벨 1**: `SKILL.md` / `SKILL.ko.md`
+- **레벨 2**: `references/`
+- **레벨 3**: `examples/`
+- **레벨 4**: `scripts/`
 
 ## 참고 자료(References)
 
