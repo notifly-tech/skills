@@ -63,10 +63,3 @@ jobs:
 
       - name: Release to npm
         run: npm publish --provenance --access public
-
-  generate-llms:
-    needs: release
-    uses: ./.github/workflows/generate-llms.yml
-    with:
-      release_version: ${{ github.event.inputs.version }}
-    secrets: inherit
