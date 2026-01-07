@@ -8,6 +8,8 @@
 - React Native:
   `https://docs.notifly.tech/ko/developer-guide/react-native-sdk.md`
 - Flutter: `https://docs.notifly.tech/ko/developer-guide/flutter-sdk.md`
+- JavaScript(Web):
+  `https://docs.notifly.tech/ko/developer-guide/javascript-sdk`
 
 ## 자격 증명(SDK)
 

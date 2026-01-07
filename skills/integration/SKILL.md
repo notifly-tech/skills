@@ -1,9 +1,10 @@
 ---
 name: notifly-integration
 description:
-  노티플라이(Notifly) 모바일 SDK를 iOS, Android, Flutter, React Native
-  프로젝트에 연동합니다. 공식 Notifly 문서와 SDK 샘플을 단일 기준으로 삼아
-  설치/초기화/MCP 설정/검증/트러블슈팅을 단계별로 안내합니다.
+  노티플라이(Notifly) SDK를 Mobile(iOS/Android/Flutter/React Native) 및
+  Web(JavaScript/Tag Manager) 프로젝트에 연동합니다. 공식 Notifly 문서와
+  SDK 샘플을 단일 기준으로 삼아 설치/초기화/MCP 설정/검증/트러블슈팅을
+  단계별로 안내합니다.
 ---
 
 # Notifly SDK 연동 스킬
@@ -12,9 +13,11 @@ description:
 대상은:
 
 - 푸시 알림
-- 인앱 팝업 메시지
+- 인앱 팝업 메시지 / 웹 팝업
 - 유저 식별/유저 프로퍼티
 - 이벤트 트래킹(플랫폼 SDK가 지원하는 범위)
+- 웹 푸시 (Service Worker 기반)
+- 웹 연동 (JavaScript SDK / Google Tag Manager)
 
 ## 연동 전략 (MCP 우선)
 
@@ -75,9 +78,15 @@ MCP 도구가 없다면 먼저 `notifly-mcp-server`를 구성하세요:
 
 진행 전 반드시 확인:
 
-- **Firebase 연동 완료** (Notifly는 FCM 사용)
-- **iOS APNs 인증을 Firebase에 등록** (iOS / Flutter iOS / RN iOS)
-- **Android 인앱 팝업은 Android 11 (API 30)+ 필요**
+- **Mobile**:
+  - **Firebase 연동 완료** (Notifly는 FCM 사용)
+  - **iOS APNs 인증을 Firebase에 등록** (iOS / Flutter iOS / RN iOS)
+  - **Android 인앱 팝업은 Android 11 (API 30)+ 필요**
+- **Web (웹 푸시 사용 시)**:
+  - **VAPID 키 생성**: 콘솔 **설정 → SDK 설정 → 웹사이트 설정**
+  - **HTTPS 환경 권장/필수**: 브라우저 권한 정책 및 Service Worker 요구사항
+  - **Service Worker 파일 제공**: 번들러 사용 시 SW 파일이 누락되지 않도록
+    public/static assets 복사 설정
 
 공식 가이드:
 
@@ -86,10 +95,12 @@ MCP 도구가 없다면 먼저 `notifly-mcp-server`를 구성하세요:
 - Flutter: `https://docs.notifly.tech/ko/developer-guide/flutter-sdk.md`
 - React Native:
   `https://docs.notifly.tech/ko/developer-guide/react-native-sdk.md`
+- JavaScript(Web):
+  `https://docs.notifly.tech/ko/developer-guide/javascript-sdk`
 
 ### 2단계: 자격 증명(SDK)
 
-Notifly Mobile SDK 자격 증명:
+Notifly SDK 자격 증명(Mobile/Web 공통):
 
 - `NOTIFLY_PROJECT_ID`
 - `NOTIFLY_USERNAME`
@@ -111,6 +122,9 @@ credentials.
 - **Android**: `build.gradle(.kts)`, `AndroidManifest.xml`, Kotlin/Java 소스
 - **Flutter**: `pubspec.yaml`, `lib/main.dart`, `ios/` + `android/`
 - **React Native**: RN 의존성이 있는 `package.json`, `ios/` + `android/`
+- **Web (JavaScript)**:
+  - `package.json`에 `notifly-js-sdk` 의존성, 또는 HTML의 CDN `<script>`
+  - `public/notifly-service-worker.js` (또는 동등한 루트 경로 SW 파일)
 
 구조가 애매하면 멈추고 사용자에게 질문하세요.
 
@@ -216,6 +230,58 @@ credentials.
 
 예시: `examples/react-native-integration.tsx`
 
+### Web (JavaScript SDK)
+
+**지원 기능(공식)**:
+
+- 웹 푸시(웹 푸시 알림 수신)
+- 웹 팝업(인앱 유사 웹 팝업)
+- 유저 식별/유저 프로퍼티/이벤트 트래킹
+
+**필수 선행(웹 푸시 사용 시, 공식)**:
+
+- 콘솔에서 VAPID 키 생성: 설정 → SDK 설정 → 웹사이트 설정
+- HTTPS 환경에서 서비스(브라우저 정책)
+- Service Worker 파일을 **루트 경로**에서 제공(예: `/notifly-service-worker.js`)
+
+**1) Service Worker 등록(공식 패턴)**:
+
+- 루트(public) 경로에 `notifly-service-worker.js` 생성
+- 내용(공식 패턴):
+  - `self.importScripts("https://cdn.jsdelivr.net/npm/notifly-js-sdk@2/dist/NotiflyServiceWorker.js");`
+- 번들러 사용 시 SW 파일이 번들에 흡수/삭제되지 않도록 assets copy 설정
+
+예시: `examples/notifly-service-worker.js`
+
+**2) SDK 설치(선택)**:
+
+- npm/yarn/pnpm: `notifly-js-sdk` 설치
+- 또는 CDN으로 로드 후 `window.notifly` 접근
+
+**3) SDK 초기화(공식 패턴)**:
+
+- `projectId`, `username`, `password`는 코드에서 지정
+- (참고) SDK 2.5.0+에서는 웹 푸시 세부 옵션(VAPID/SW 경로/권한 팝업 등)이
+  콘솔 설정값으로 대체될 수 있음(공식 문서 우선)
+
+예시: `examples/web-integration.js`
+
+**4) 권한 요청(공식)**:
+
+- 콘솔에서 자동 권한 팝업을 켜면 방문 시 안내 → 브라우저 권한 요청 순서로 동작
+- 특정 타이밍에만 요청하려면(콘솔 자동 노출 OFF) `notifly.requestPermission(...)`
+
+**5) 유저/이벤트(공식)**:
+
+- `notifly.setUserId(userId | null)`
+- `notifly.setUserProperties({...})`
+- `notifly.trackEvent(name, params, segmentationEventParamKeys)`
+
+**6) Google Tag Manager(GTM) 옵션(선택)**:
+
+- 코드 수정 없이 초기화/유저/이벤트를 구성 가능(공식 GTM 가이드 참고)
+- 단, 웹 푸시를 쓰는 경우 SW 파일 제공은 여전히 필요
+
 ### 5단계: SDK 초기화 위치 확정(레포 기준 증빙)
 
 이 단계는 “어디에 코드를 넣는지”와 “레포에서 증명 가능한지”를 점검합니다.
@@ -259,11 +325,20 @@ credentials.
 
 - `bash skills/integration/scripts/validate-sdk.sh`
 
+> 참고: 위 스크립트는 **모바일 플랫폼(iOS/Android/Flutter/RN)** 검증용입니다.
+> Web(JavaScript) 연동은 아래의 수동 검증 체크리스트를 사용하세요.
+
 2. 빌드/실행 후 콘솔에서 확인:
 
 - 초기화 로그/동작 확인
 - 푸시 토큰 등록(네이티브) 확인
 - Notifly 콘솔에서 이벤트/기기 등록 확인
+
+3. Web 수동 검증(웹 푸시/웹 팝업):
+
+- `/notifly-service-worker.js`가 실제로 200 응답 + 올바른 내용인지 확인
+- 브라우저에서 알림 권한 요청/허용 흐름이 의도대로 동작하는지 확인
+- `setUserId → setUserProperties → trackEvent` 호출 후 콘솔에서 반영 확인
 
 ### 7단계: 플랫폼별 레포 검증 체크리스트
 
@@ -292,6 +367,15 @@ credentials.
 - `ios/Podfile.lock`이 `pod install` 이후 업데이트됨
 - 공식 문서대로 네이티브 연동 완료
 - JS 호출이 공식 샘플 패턴과 일치
+
+#### Web (JavaScript)
+
+- `notifly-js-sdk` 설치(npm) 또는 CDN 로드 확인
+- 루트 경로에 Service Worker 파일 존재(예: `public/notifly-service-worker.js`)
+- SW 파일이 `NotiflyServiceWorker.js`를 importScripts 하는지 확인
+- 앱 코드에서 `notifly.initialize({ projectId, username, password, ... })` 호출 확인
+- (웹 푸시) 권한 요청 및 구독 흐름이 동작하는지 확인
+- `setUserId`, `setUserProperties`, `trackEvent` 호출이 제품 요구사항과 일치
 
 ### 8단계: 문서화
 
@@ -326,6 +410,8 @@ credentials.
 - `examples/android-integration.kt`
 - `examples/flutter-integration.dart`
 - `examples/react-native-integration.tsx`
+- `examples/notifly-service-worker.js`
+- `examples/web-integration.js`
 
 ## 스크립트(Scripts)
 
