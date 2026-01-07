@@ -124,9 +124,9 @@ npx notifly-agent-skills@latest install --all --client cursor --global
 또는 명령줄에서 `skill-installer`로 특정 스킬을 직접 설치할 수 있습니다.
 
 ```bash
-skill-installer install <link-to-skill-folder>
+$skill-installer install <link-to-skill-folder>
 # 예시
-skill-installer install https://github.com/notifly-tech/skills/tree/main/skills/integration
+$skill-installer install https://github.com/notifly-tech/skills/tree/main/skills/integration
 ```
 
 설치 후 Codex를 재시작해야 새로 설치한 스킬이 로드됩니다.
