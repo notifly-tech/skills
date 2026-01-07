@@ -39,4 +39,3 @@ export function setNotiflyUserProperties(props) {
 export function trackNotiflyEvent(name, params, segmentationEventParamKeys) {
   notifly.trackEvent(name, params, segmentationEventParamKeys);
 }
-
