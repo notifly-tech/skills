@@ -1,0 +1,20 @@
+{
+  "name": "notifly-agent-skills",
+  "owner": {
+    "name": "Grey Box, Co., Ltd",
+    "email": "contact@greyboxhq.com"
+  },
+  "metadata": {
+    "description": "Collection of Agent Skills for Notifly.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "notifly-integration",
+      "description": "Integrates Notifly SDK into iOS/Android/Flutter/React Native projects. Use when the user asks to install/setup/integrate Notifly, or when the user types \"notifly-integration\".",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/integration"]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+<!-- Notifly Agent Skills llms.txt -->
+
+# Notifly Agent Skills
+
+This file contains a comprehensive index of all Notifly Agent Skills files.
+Each entry includes the file path, type, and description for semantic search.
+
+---
+
+## notifly-integration
+
+Integrates Notifly Mobile SDK into iOS, Android, Flutter, and React Native projects. Provides step-by-step guidance for installation, initialization, MCP-assisted verification, and troubleshooting using the official Notifly docs and SDK samples as the source of truth.
+
+- [notifly-integration](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/SKILL.md): Integrates Notifly Mobile SDK into iOS, Android, Flutter, and React Native projects. Provides step-by-step guidance for installation, initialization, MCP-assisted verification, and troubleshooting using the official Notifly docs and SDK samples as the source of truth.
+
+### References
+
+- [Error Handling (Reference)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/references/error-handling.md): Reference documentation for integration skill
+- [Framework Patterns (Reference)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/references/framework-patterns.md): Reference documentation for integration skill
+- [Mcp Integration (Reference)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/references/mcp-integration.md): Reference documentation for integration skill
+- [Sdk Reference (Reference)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/references/sdk-reference.md): Reference documentation for integration skill
+
+### Examples
+
+- [Android Integration (Example)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/examples/android-integration.kt): Code example for integration skill
+- [Flutter Integration (Example)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/examples/flutter-integration.dart): Code example for integration skill
+- [Ios Integration (Example)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/examples/ios-integration.swift): Code example for integration skill
+- [React Native Integration (Example)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/examples/react-native-integration.tsx): Code example for integration skill
+
+### Scripts
+
+- [Install Mcp (Script)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/scripts/install-mcp.sh): Utility script for integration skill
+- [Validate Sdk (Script)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/scripts/validate-sdk.sh): Utility script for integration skill
+
+---
+
