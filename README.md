@@ -7,14 +7,14 @@
 AI 클라이언트(예: Cursor, Claude Code, Codex, VS Code 등)에서 불러와서 실행할 수
 있는 **오픈 에이전트 스킬 기반의 독립형 패키지**입니다.
 
-노티플라이(Notifly) MCP 서버와 함께 사용하면 SDK 연동 및 문서 검색과 같은 작업을 에이전트
-스킬 단위로 쉽게 재사용할 수 있습니다.
+노티플라이(Notifly) MCP 서버와 함께 사용하면 SDK 연동 및 문서 검색과 같은 작업을
+에이전트 스킬 단위로 쉽게 재사용할 수 있습니다.
 
 ## 스킬 설치하기
 
 이 저장소의 에이전트 스킬은
-[오픈 에이전트 스킬 표준](https://agentskills.io/home)을 기반으로 구축되었습니다.
-지원되는 AI 클라이언트 목록과 최신 정보는
+[오픈 에이전트 스킬 표준](https://agentskills.io/home)을 기반으로
+구축되었습니다. 지원되는 AI 클라이언트 목록과 최신 정보는
 [공식 문서](https://agentskills.io/home#adoption)를 참고하시기 바랍니다.
 사용하는 AI 클라이언트에 따라 여러 가지 방법으로 스킬을 설치할 수 있습니다.
 
@@ -22,7 +22,8 @@ AI 클라이언트(예: Cursor, Claude Code, Codex, VS Code 등)에서 불러와
 
 Amp, Claude Code, Codex, Copilot, Cursor, Goose, Letta, OpenCode, VS Code 등의
 클라이언트에서는 `notifly-agent-skills` 패키지가 제공하는 **Universal CLI**를
-사용하여 스킬을 설치하고 노티플라이 MCP 서버를 자동으로 구성하는 것을 권장합니다.
+사용하여 스킬을 설치하고 노티플라이 MCP 서버를 자동으로 구성하는 것을
+권장합니다.
 
 #### 설치 모드
 
@@ -65,7 +66,8 @@ npx notifly-agent-skills@latest install --all --client cursor --global
 현재 제공되는 스킬은 다음과 같습니다.
 
 - **notifly-integration**: iOS, Android, Flutter, React Native 프로젝트에
-  노티플라이 모바일 SDK를 통합하고 노티플라이 MCP 서버를 함께 구성해 주는 스킬입니다.
+  노티플라이 모바일 SDK를 통합하고 노티플라이 MCP 서버를 함께 구성해 주는
+  스킬입니다.
 
 ### 지원되는 클라이언트 및 설치 플래그
 
@@ -114,8 +116,8 @@ npx notifly-agent-skills@latest install --all --client cursor --global
 
 ### Codex
 
-스킬을 수동으로 설치하려면 이 저장소의 스킬을 Codex 설정 디렉터리에 저장하시기 바랍니다.
-자세한 위치는 공식 문서를 참고하시기 바랍니다.
+스킬을 수동으로 설치하려면 이 저장소의 스킬을 Codex 설정 디렉터리에 저장하시기
+바랍니다. 자세한 위치는 공식 문서를 참고하시기 바랍니다.
 
 - [Codex 스킬 저장 경로 안내](https://developers.openai.com/codex/skills/#where-to-save-skills)
 
@@ -131,17 +133,20 @@ skill-installer install https://github.com/notifly-tech/skills/tree/main/skills/
 
 ## 면책 조항
 
-AI의 비결정적 특성으로 인해 이러한 스킬이 때때로 실패하거나 의도한 대로 동작하지 않을 수 있습니다.
-스킬이 수행하는 모든 작업은 **항상 주의 깊게 검토하고 확인**해 주시기 바랍니다.
+AI의 비결정적 특성으로 인해 이러한 스킬이 때때로 실패하거나 의도한 대로 동작하지
+않을 수 있습니다. 스킬이 수행하는 모든 작업은 **항상 주의 깊게 검토하고 확인**해
+주시기 바랍니다.
 
 이 스킬들은 개발 생산성을 높이도록 설계되었지만, 실제 결과물(코드, 설정, 명령
 실행 등)에 대한 최종 책임은 사용자에게 있습니다. 실제 운영 환경에서는 특히 결제,
-데이터 삭제, 대규모 알림 발송과 같은 작업 전에 반드시 실행 결과 및 생성된 코드·설정을 검토하시기 바랍니다.
+데이터 삭제, 대규모 알림 발송과 같은 작업 전에 반드시 실행 결과 및 생성된
+코드·설정을 검토하시기 바랍니다.
 
 ## 라이선스
 
-이 저장소의 각 스킬에는 각 스킬 디렉터리 내 `LICENSE.txt` 파일에 명시된 라이선스 조항이 적용됩니다.
-구체적인 라이선스 조항은 각 스킬 디렉터리의 `LICENSE.txt` 파일을 확인하시기 바랍니다.
+이 저장소의 각 스킬에는 각 스킬 디렉터리 내 `LICENSE.txt` 파일에 명시된 라이선스
+조항이 적용됩니다. 구체적인 라이선스 조항은 각 스킬 디렉터리의 `LICENSE.txt`
+파일을 확인하시기 바랍니다.
 
 자세한 내용과 최신 스킬 목록은 `notifly-agent-skills` 패키지와 GitHub 저장소를
 참고하시기 바랍니다.

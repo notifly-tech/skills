@@ -7,7 +7,4 @@
 // - serviceWorkerPath
 //
 // Official pattern: import the Notifly service worker bundle.
-self.importScripts(
-  "https://cdn.jsdelivr.net/npm/notifly-js-sdk@2/dist/NotiflyServiceWorker.js"
-);
-
+self.importScripts("https://cdn.jsdelivr.net/npm/notifly-js-sdk@2/dist/NotiflyServiceWorker.js");

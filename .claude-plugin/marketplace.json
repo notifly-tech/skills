@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Collection of Agent Skills for Notifly.",
-    "version": "0.1.0"
+    "version": "0.1.1"
   },
   "plugins": [
     {
@@ -14,7 +14,9 @@
       "description": "Integrates Notifly SDK into iOS/Android/Flutter/React Native projects. Use when the user asks to install/setup/integrate Notifly, or when the user types \"notifly-integration\".",
       "source": "./",
       "strict": false,
-      "skills": ["./skills/integration"]
+      "skills": [
+        "./skills/integration"
+      ]
     }
   ]
 }

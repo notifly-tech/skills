@@ -9,9 +9,9 @@ Each entry includes the file path, type, and description for semantic search.
 
 ## notifly-integration
 
-Integrates Notifly Mobile SDK into iOS, Android, Flutter, and React Native projects. Provides step-by-step guidance for installation, initialization, MCP-assisted verification, and troubleshooting using the official Notifly docs and SDK samples as the source of truth.
+노티플라이(Notifly) SDK를 Mobile(iOS/Android/Flutter/React Native) 및 Web(JavaScript/Tag Manager) 프로젝트에 연동합니다. 공식 Notifly 문서와 SDK 샘플을 단일 기준으로 삼아 설치/초기화/MCP 설정/검증/트러블슈팅을 단계별로 안내합니다.
 
-- [notifly-integration](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/SKILL.md): Integrates Notifly Mobile SDK into iOS, Android, Flutter, and React Native projects. Provides step-by-step guidance for installation, initialization, MCP-assisted verification, and troubleshooting using the official Notifly docs and SDK samples as the source of truth.
+- [notifly-integration](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/SKILL.md): 노티플라이(Notifly) SDK를 Mobile(iOS/Android/Flutter/React Native) 및 Web(JavaScript/Tag Manager) 프로젝트에 연동합니다. 공식 Notifly 문서와 SDK 샘플을 단일 기준으로 삼아 설치/초기화/MCP 설정/검증/트러블슈팅을 단계별로 안내합니다.
 
 ### References
 
@@ -25,7 +25,9 @@ Integrates Notifly Mobile SDK into iOS, Android, Flutter, and React Native proje
 - [Android Integration (Example)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/examples/android-integration.kt): Code example for integration skill
 - [Flutter Integration (Example)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/examples/flutter-integration.dart): Code example for integration skill
 - [Ios Integration (Example)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/examples/ios-integration.swift): Code example for integration skill
+- [Notifly Service Worker (Example)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/examples/notifly-service-worker.js): Code example for integration skill
 - [React Native Integration (Example)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/examples/react-native-integration.tsx): Code example for integration skill
+- [Web Integration (Example)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/integration/examples/web-integration.js): Code example for integration skill
 
 ### Scripts
 

@@ -2,9 +2,9 @@
 name: notifly-integration
 description:
   노티플라이(Notifly) SDK를 Mobile(iOS/Android/Flutter/React Native) 및
-  Web(JavaScript/Tag Manager) 프로젝트에 연동합니다. 공식 Notifly 문서와
-  SDK 샘플을 단일 기준으로 삼아 설치/초기화/MCP 설정/검증/트러블슈팅을
-  단계별로 안내합니다.
+  Web(JavaScript/Tag Manager) 프로젝트에 연동합니다. 공식 Notifly 문서와 SDK
+  샘플을 단일 기준으로 삼아 설치/초기화/MCP 설정/검증/트러블슈팅을 단계별로
+  안내합니다.
 ---
 
 # Notifly SDK 연동 스킬
@@ -95,8 +95,7 @@ MCP 도구가 없다면 먼저 `notifly-mcp-server`를 구성하세요:
 - Flutter: `https://docs.notifly.tech/ko/developer-guide/flutter-sdk.md`
 - React Native:
   `https://docs.notifly.tech/ko/developer-guide/react-native-sdk.md`
-- JavaScript(Web):
-  `https://docs.notifly.tech/ko/developer-guide/javascript-sdk`
+- JavaScript(Web): `https://docs.notifly.tech/ko/developer-guide/javascript-sdk`
 
 ### 2단계: 자격 증명(SDK)
 
@@ -261,15 +260,16 @@ credentials.
 **3) SDK 초기화(공식 패턴)**:
 
 - `projectId`, `username`, `password`는 코드에서 지정
-- (참고) SDK 2.5.0+에서는 웹 푸시 세부 옵션(VAPID/SW 경로/권한 팝업 등)이
-  콘솔 설정값으로 대체될 수 있음(공식 문서 우선)
+- (참고) SDK 2.5.0+에서는 웹 푸시 세부 옵션(VAPID/SW 경로/권한 팝업 등)이 콘솔
+  설정값으로 대체될 수 있음(공식 문서 우선)
 
 예시: `examples/web-integration.js`
 
 **4) 권한 요청(공식)**:
 
 - 콘솔에서 자동 권한 팝업을 켜면 방문 시 안내 → 브라우저 권한 요청 순서로 동작
-- 특정 타이밍에만 요청하려면(콘솔 자동 노출 OFF) `notifly.requestPermission(...)`
+- 특정 타이밍에만 요청하려면(콘솔 자동 노출 OFF)
+  `notifly.requestPermission(...)`
 
 **5) 유저/이벤트(공식)**:
 
@@ -373,7 +373,8 @@ credentials.
 - `notifly-js-sdk` 설치(npm) 또는 CDN 로드 확인
 - 루트 경로에 Service Worker 파일 존재(예: `public/notifly-service-worker.js`)
 - SW 파일이 `NotiflyServiceWorker.js`를 importScripts 하는지 확인
-- 앱 코드에서 `notifly.initialize({ projectId, username, password, ... })` 호출 확인
+- 앱 코드에서 `notifly.initialize({ projectId, username, password, ... })` 호출
+  확인
 - (웹 푸시) 권한 요청 및 구독 흐름이 동작하는지 확인
 - `setUserId`, `setUserProperties`, `trackEvent` 호출이 제품 요구사항과 일치
 
