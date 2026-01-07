@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 #
-# Notifly SDK Validation Script (bash)
+# Notifly SDK 검증 스크립트 (bash)
 #
-# Validates that Notifly SDK is properly installed and initialized for mobile platforms:
+# Notifly SDK가 모바일 플랫폼에서 올바르게 설치/초기화되었는지 검증합니다:
 # - iOS (CocoaPods / Swift Package Manager)
 # - Android (Gradle + JitPack)
 # - Flutter (pubspec.yaml)
-# - React Native (package.json + native setup markers)
+# - React Native (package.json + 네이티브 설정 마커)
 #
-# Usage:
+# 사용법:
 #   bash scripts/validate-sdk.sh
 #   bash scripts/validate-sdk.sh --check-install
 #   bash scripts/validate-sdk.sh --check-init
 #
-# Exit codes:
-#   0 = success
-#   1 = validation failed
+# 종료 코드:
+#   0 = 성공
+#   1 = 검증 실패
 
 set -euo pipefail
 
@@ -26,7 +26,7 @@ RED='\033[31m'
 RESET='\033[0m'
 
 log() {
-  # shellcheck disable=SC2059
+  # shellcheck disable=SC2059 (printf 포맷 문자열은 의도적으로 사용)
   printf "%b\n" "$1"
 }
 
@@ -37,16 +37,16 @@ die() {
 
 usage() {
   cat <<'USAGE'
-Notifly SDK Validation Script (bash)
+Notifly SDK 검증 스크립트 (bash)
 
-Usage:
+사용법:
   bash scripts/validate-sdk.sh [--check-install] [--check-init]
 
-If no flags are provided, all checks run.
+플래그를 주지 않으면 모든 검사를 수행합니다.
 
-Checks:
-  --check-install  Validate Notifly SDK dependency is present (iOS Podfile/Package.swift, Android build.gradle(.kts), Flutter pubspec.yaml, React Native package.json)
-  --check-init     Search platform-specific entrypoints for initialization markers
+검사 항목:
+  --check-install  Notifly SDK 의존성이 존재하는지 검증(iOS Podfile/Package.swift, Android build.gradle(.kts), Flutter pubspec.yaml, React Native package.json)
+  --check-init     플랫폼별 엔트리포인트에서 초기화 마커를 탐색
 USAGE
 }
 
@@ -65,7 +65,7 @@ detect_platform() {
 }
 
 check_install_ios() {
-  log "${BLUE}📦 Checking iOS SDK installation...${RESET}"
+  log "${BLUE}📦 iOS SDK 설치를 확인합니다...${RESET}"
 
   local found=0
 
@@ -74,7 +74,7 @@ check_install_ios() {
   [[ -f "ios/Podfile" ]] && podfile="ios/Podfile"
   if [[ -f "$podfile" ]]; then
     if grep -Eq "pod\\s+['\"]notifly_sdk['\"]" "$podfile" 2>/dev/null; then
-      log "${GREEN}✓ notifly_sdk found in ${podfile}${RESET}"
+      log "${GREEN}✓ ${podfile}에서 notifly_sdk를 찾았습니다${RESET}"
       found=1
     fi
   fi
@@ -82,14 +82,14 @@ check_install_ios() {
   # Swift Package Manager
   if [[ -f "Package.swift" ]]; then
     if grep -Eq "team-michael/notifly-ios-sdk|github.com/team-michael/notifly-ios-sdk" Package.swift 2>/dev/null; then
-      log "${GREEN}✓ notifly-ios-sdk found in Package.swift${RESET}"
+      log "${GREEN}✓ Package.swift에서 notifly-ios-sdk를 찾았습니다${RESET}"
       found=1
     fi
   fi
 
   if [[ "$found" -eq 0 ]]; then
-    log "${RED}✗ Notifly iOS SDK not found (Podfile/Package.swift)${RESET}"
-    log "${YELLOW}  iOS: Add: pod 'notifly_sdk'  OR add SPM: https://github.com/team-michael/notifly-ios-sdk${RESET}"
+    log "${RED}✗ Notifly iOS SDK를 찾지 못했습니다(Podfile/Package.swift)${RESET}"
+    log "${YELLOW}  iOS: 추가: pod 'notifly_sdk'  또는 SPM 추가: https://github.com/team-michael/notifly-ios-sdk${RESET}"
     return 1
   fi
 
@@ -97,12 +97,12 @@ check_install_ios() {
 }
 
 check_install_android() {
-  log "${BLUE}📦 Checking Android SDK installation...${RESET}"
+  log "${BLUE}📦 Android SDK 설치를 확인합니다...${RESET}"
 
   local found_dep=0
   local found_repo=0
 
-  # search common gradle files
+  # 자주 사용하는 Gradle 파일들을 검색
   local files=(
     "build.gradle" "build.gradle.kts"
     "app/build.gradle" "app/build.gradle.kts"
@@ -122,61 +122,61 @@ check_install_android() {
   done
 
   if [[ "$found_dep" -eq 1 ]]; then
-    log "${GREEN}✓ Notifly Android SDK dependency found (com.github.team-michael:notifly-android-sdk)${RESET}"
+    log "${GREEN}✓ Notifly Android SDK 의존성을 찾았습니다(com.github.team-michael:notifly-android-sdk)${RESET}"
   else
-    log "${RED}✗ Notifly Android SDK dependency not found${RESET}"
-    log "${YELLOW}  Android: Add: implementation 'com.github.team-michael:notifly-android-sdk:<latest>'${RESET}"
+    log "${RED}✗ Notifly Android SDK 의존성을 찾지 못했습니다${RESET}"
+    log "${YELLOW}  Android: 추가: implementation 'com.github.team-michael:notifly-android-sdk:<latest>'${RESET}"
     return 1
   fi
 
   if [[ "$found_repo" -eq 1 ]]; then
-    log "${GREEN}✓ JitPack repository found${RESET}"
+    log "${GREEN}✓ JitPack 저장소 설정을 찾았습니다${RESET}"
   else
-    log "${YELLOW}⚠ JitPack repository not detected (required to resolve the SDK)${RESET}"
-    log "${YELLOW}  Add: maven { url 'https://jitpack.io' }${RESET}"
+    log "${YELLOW}⚠ JitPack 저장소 설정을 찾지 못했습니다(SDK를 resolve 하려면 필요)${RESET}"
+    log "${YELLOW}  추가: maven { url 'https://jitpack.io' }${RESET}"
   fi
 
   return 0
 }
 
 check_install_flutter() {
-  log "${BLUE}📦 Checking Flutter SDK installation...${RESET}"
+  log "${BLUE}📦 Flutter SDK 설치를 확인합니다...${RESET}"
 
   if [[ ! -f "pubspec.yaml" ]]; then
-    log "${RED}✗ pubspec.yaml not found${RESET}"
+    log "${RED}✗ pubspec.yaml을 찾지 못했습니다${RESET}"
     return 1
   fi
 
   if grep -Eq "^\\s*notifly_flutter:\\s*" pubspec.yaml 2>/dev/null; then
-    log "${GREEN}✓ notifly_flutter found in pubspec.yaml${RESET}"
+    log "${GREEN}✓ pubspec.yaml에서 notifly_flutter를 찾았습니다${RESET}"
     return 0
   fi
 
-  log "${RED}✗ notifly_flutter not found in pubspec.yaml${RESET}"
-  log "${YELLOW}  Flutter: Run: flutter pub add notifly_flutter${RESET}"
+  log "${RED}✗ pubspec.yaml에서 notifly_flutter를 찾지 못했습니다${RESET}"
+  log "${YELLOW}  Flutter: 실행: flutter pub add notifly_flutter${RESET}"
   return 1
 }
 
 check_install_react_native() {
-  log "${BLUE}📦 Checking React Native SDK installation...${RESET}"
+  log "${BLUE}📦 React Native SDK 설치를 확인합니다...${RESET}"
 
   if [[ ! -f "package.json" ]]; then
-    log "${RED}✗ package.json not found${RESET}"
+    log "${RED}✗ package.json을 찾지 못했습니다${RESET}"
     return 1
   fi
 
   if grep -Eq "\"notifly-sdk\"" package.json 2>/dev/null; then
-    log "${GREEN}✓ notifly-sdk found in package.json${RESET}"
+    log "${GREEN}✓ package.json에서 notifly-sdk를 찾았습니다${RESET}"
     return 0
   fi
 
-  log "${RED}✗ notifly-sdk not found in package.json${RESET}"
-  log "${YELLOW}  React Native: Run: npm install notifly-sdk@latest --save${RESET}"
+  log "${RED}✗ package.json에서 notifly-sdk를 찾지 못했습니다${RESET}"
+  log "${YELLOW}  React Native: 실행: npm install notifly-sdk@latest --save${RESET}"
   return 1
 }
 
 check_init_ios() {
-  log "${BLUE}🔍 Checking iOS initialization markers...${RESET}"
+  log "${BLUE}🔍 iOS 초기화 마커를 확인합니다...${RESET}"
 
   local files=(
     "AppDelegate.swift"
@@ -195,16 +195,16 @@ check_init_ios() {
   done
 
   if [[ "$found" -eq 1 ]]; then
-    log "${GREEN}✓ Found Notifly.initialize(...) in AppDelegate${RESET}"
+    log "${GREEN}✓ AppDelegate에서 Notifly.initialize(...)를 찾았습니다${RESET}"
     return 0
   fi
 
-  log "${YELLOW}⚠ Could not find Notifly.initialize(...) in common AppDelegate locations${RESET}"
+  log "${YELLOW}⚠ 일반적인 AppDelegate 위치에서 Notifly.initialize(...)를 찾지 못했습니다${RESET}"
   return 1
 }
 
 check_init_android() {
-  log "${BLUE}🔍 Checking Android initialization markers...${RESET}"
+  log "${BLUE}🔍 Android 초기화 마커를 확인합니다...${RESET}"
 
   local found=0
   local candidates
@@ -219,16 +219,16 @@ check_init_android() {
   done <<< "$candidates"
 
   if [[ "$found" -eq 1 ]]; then
-    log "${GREEN}✓ Found tech.notifly.Notifly.initialize(...) in Android sources${RESET}"
+    log "${GREEN}✓ Android 소스에서 tech.notifly.Notifly.initialize(...)를 찾았습니다${RESET}"
     return 0
   fi
 
-  log "${YELLOW}⚠ Could not find tech.notifly.Notifly.initialize(...)${RESET}"
+  log "${YELLOW}⚠ tech.notifly.Notifly.initialize(...)를 찾지 못했습니다${RESET}"
   return 1
 }
 
 check_init_flutter() {
-  log "${BLUE}🔍 Checking Flutter initialization markers...${RESET}"
+  log "${BLUE}🔍 Flutter 초기화 마커를 확인합니다...${RESET}"
 
   local found=0
   local candidates
@@ -243,47 +243,47 @@ check_init_flutter() {
   done <<< "$candidates"
 
   if [[ "$found" -eq 1 ]]; then
-    log "${GREEN}✓ Found NotiflyPlugin.initialize(...) in Dart sources${RESET}"
+    log "${GREEN}✓ Dart 소스에서 NotiflyPlugin.initialize(...)를 찾았습니다${RESET}"
     return 0
   fi
 
-  log "${YELLOW}⚠ Could not find NotiflyPlugin.initialize(...)${RESET}"
+  log "${YELLOW}⚠ NotiflyPlugin.initialize(...)를 찾지 못했습니다${RESET}"
   return 1
 }
 
 check_init_react_native() {
-  log "${BLUE}🔍 Checking React Native initialization markers...${RESET}"
+  log "${BLUE}🔍 React Native 초기화 마커를 확인합니다...${RESET}"
 
   local found_js=0
   if [[ -f "index.js" ]] || [[ -f "index.ts" ]] || [[ -f "index.tsx" ]] || [[ -f "App.tsx" ]]; then
     found_js=1
   fi
 
-  # Native markers (iOS bridge header import)
+  # 네이티브 마커(iOS 브리지 헤더 import)
   local found_ios_native=0
   if find ios -maxdepth 4 -type f -name "AppDelegate.mm" 2>/dev/null | xargs -I{} grep -Eq "notifly_sdk-Swift\\.h" {} 2>/dev/null; then
     found_ios_native=1
   fi
 
-  # Native markers (Android initialize)
+  # 네이티브 마커(Android initialize)
   local found_android_native=0
   if find android -maxdepth 6 -type f \( -name "*.kt" -o -name "*.java" \) 2>/dev/null | xargs -I{} grep -Eq "tech\\.notifly\\.Notifly" {} 2>/dev/null; then
     found_android_native=1
   fi
 
   if [[ "$found_ios_native" -eq 1 ]]; then
-    log "${GREEN}✓ Found iOS native marker (notifly_sdk-Swift.h)${RESET}"
+    log "${GREEN}✓ iOS 네이티브 마커를 찾았습니다(notifly_sdk-Swift.h)${RESET}"
   else
-    log "${YELLOW}⚠ iOS native marker not found (check AppDelegate.mm setup)${RESET}"
+    log "${YELLOW}⚠ iOS 네이티브 마커를 찾지 못했습니다(AppDelegate.mm 설정을 확인하세요)${RESET}"
   fi
 
   if [[ "$found_android_native" -eq 1 ]]; then
-    log "${GREEN}✓ Found Android native marker (tech.notifly.Notifly)${RESET}"
+    log "${GREEN}✓ Android 네이티브 마커를 찾았습니다(tech.notifly.Notifly)${RESET}"
   else
-    log "${YELLOW}⚠ Android native marker not found (check Application setup)${RESET}"
+    log "${YELLOW}⚠ Android 네이티브 마커를 찾지 못했습니다(Application 설정을 확인하세요)${RESET}"
   fi
 
-  # We don't hard-fail RN init because projects vary, but we provide guidance.
+  # 프로젝트 구조가 다양하므로 RN 초기화는 강제 실패 처리하지 않고, 가이드를 제공합니다.
   if [[ "$found_ios_native" -eq 1 || "$found_android_native" -eq 1 || "$found_js" -eq 1 ]]; then
     return 0
   fi
@@ -301,7 +301,7 @@ main() {
         --check-install) check_install=1 ;;
         --check-init) check_init=1 ;;
         -h|--help) usage; exit 0 ;;
-        *) die "Unknown argument: $arg" ;;
+        *) die "알 수 없는 인자: $arg" ;;
       esac
     done
   else
@@ -313,7 +313,7 @@ main() {
   platform=$(detect_platform)
 
   if [[ "$platform" == "unknown" ]]; then
-    die "Could not detect platform. Run from your app project root (iOS/Android/Flutter/RN)."
+    die "플랫폼을 감지하지 못했습니다. 앱 프로젝트 루트(iOS/Android/Flutter/RN)에서 실행하세요."
   fi
 
   local ok=0
@@ -337,10 +337,10 @@ main() {
   fi
 
   if [[ "$ok" -ne 0 ]]; then
-    die "Validation failed. See warnings above."
+    die "검증에 실패했습니다. 위의 경고 메시지를 확인하세요."
   fi
 
-  log "${GREEN}✅ Notifly SDK validation passed for platform: ${platform}${RESET}"
+  log "${GREEN}✅ Notifly SDK 검증 통과 (플랫폼: ${platform})${RESET}"
 }
 
 main "$@"

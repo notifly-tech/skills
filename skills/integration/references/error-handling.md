@@ -1,65 +1,65 @@
-# Notifly SDK Integration Error Handling
+# Notifly SDK 연동 오류 처리
 
-This guide covers common integration errors and how to fix them.
+이 가이드는 연동 과정에서 자주 발생하는 오류와 해결 방법을 정리합니다.
 
-## 1) Credentials missing / incorrect
+## 1) 자격 증명 누락 / 오류
 
-Symptoms:
+증상:
 
-- SDK initializes but nothing appears in console
-- auth-related logs/errors
+- SDK는 초기화되지만 콘솔에 아무 것도 표시되지 않음
+- 인증(auth) 관련 로그/오류 발생
 
-Fix:
+해결:
 
-- Ensure you have **all three** values:
+- 다음 **3가지** 값이 모두 있는지 확인:
   - `NOTIFLY_PROJECT_ID`
   - `NOTIFLY_USERNAME`
   - `NOTIFLY_PASSWORD`
-- Confirm they come from `https://console.notifly.tech/` (Project Settings → SDK
-  credentials)
+- 값이 `https://console.notifly.tech/`에서 발급된 것인지 확인 (Project Settings
+  → SDK credentials)
 
-## 2) iOS: Firebase not initialized
+## 2) iOS: Firebase가 초기화되지 않음
 
-Symptoms:
+증상:
 
-- Logs similar to “FirebaseApp is not initialized. Please initialize FirebaseApp
-  before calling Notifly.initialize.”
+- “FirebaseApp is not initialized. Please initialize FirebaseApp before calling
+  Notifly.initialize.” 와 유사한 로그
 
-Fix:
+해결:
 
-- Call `FirebaseApp.configure()` **before** `Notifly.initialize(...)`.
+- `Notifly.initialize(...)` **이전**에 `FirebaseApp.configure()`를 호출하세요.
 
-## 3) iOS: Push doesn’t arrive
+## 3) iOS: 푸시가 도착하지 않음
 
-Fix checklist:
+해결 체크리스트:
 
-- Enable **Push Notifications** capability
-- Enable **Background Modes**: Remote notifications + Background fetch
-- APNs auth key/cert uploaded to Firebase
-- `application.registerForRemoteNotifications()` called
-- Forward APNs token via
+- **Push Notifications** capability 활성화
+- **Background Modes** 활성화: Remote notifications + Background fetch
+- Firebase에 APNs 인증 키/인증서 업로드
+- `application.registerForRemoteNotifications()` 호출
+- APNs 토큰 전달:
   `Notifly.application(...didRegisterForRemoteNotificationsWithDeviceToken: ...)`
 
-## 4) Android: Dependency not resolved
+## 4) Android: 의존성(dependency) 해결 실패
 
-Symptoms:
+증상:
 
-- Gradle cannot resolve `com.github.team-michael:notifly-android-sdk`
+- Gradle이 `com.github.team-michael:notifly-android-sdk`를 resolve 하지 못함
 
-Fix:
+해결:
 
-- Add JitPack:
+- JitPack 추가:
   - `maven { url 'https://jitpack.io' }`
 
-## 5) React Native: Wrong npm package
+## 5) React Native: 잘못된 npm 패키지
 
-Fix:
+해결:
 
-- The package is **unscoped**: `notifly-sdk`
+- 패키지는 **스코프 없음(unscoped)**: `notifly-sdk`
 
-## 6) Flutter: iOS build issues
+## 6) Flutter: iOS 빌드 이슈
 
-Fix:
+해결:
 
-- Open **Runner.xcworkspace** (not `.xcodeproj`)
-- Run `cd ios && pod install`
+- **Runner.xcworkspace**를 여세요 (`.xcodeproj` 아님)
+- `cd ios && pod install` 실행

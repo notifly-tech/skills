@@ -3,6 +3,8 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 
+const nodeBinDir = path.dirname(process.execPath);
+
 function makeTempDir(): string {
   return fs.mkdtempSync(path.join(os.tmpdir(), "notifly-agent-skills-"));
 }
@@ -55,16 +57,6 @@ exit 0
   );
 }
 
-function writeNodeShim(binDir: string) {
-  // Some installer paths run `node <<EOF ...` so we need node present on PATH.
-  writeExecutable(
-    path.join(binDir, "node"),
-    `#!/usr/bin/env bash
-exec "${process.execPath}" "$@"
-`
-  );
-}
-
 describe("skills/integration/scripts/install-mcp.sh", () => {
   const scriptPath = path.resolve(
     __dirname,
@@ -81,9 +73,9 @@ describe("skills/integration/scripts/install-mcp.sh", () => {
       PATH: process.env.PATH,
     });
     expect(res.status).toBe(0);
-    expect((res.stdout || "") + (res.stderr || "")).toMatch(/Usage:/);
+    expect((res.stdout || "") + (res.stderr || "")).toMatch(/Usage:|사용법:/);
     expect((res.stdout || "") + (res.stderr || "")).toMatch(/--client/);
-    expect((res.stdout || "") + (res.stderr || "")).toMatch(/Supported:/);
+    expect((res.stdout || "") + (res.stderr || "")).toMatch(/Supported:|지원:/);
   });
 
   it("unknown args fail with status 2", () => {
@@ -92,7 +84,7 @@ describe("skills/integration/scripts/install-mcp.sh", () => {
       PATH: process.env.PATH,
     });
     expect(res.status).toBe(2);
-    expect((res.stdout || "") + (res.stderr || "")).toMatch(/Unknown argument/);
+    expect((res.stdout || "") + (res.stderr || "")).toMatch(/Unknown argument|알 수 없는 인자/);
   });
 
   it("invalid --client fails with status 2", () => {
@@ -101,7 +93,7 @@ describe("skills/integration/scripts/install-mcp.sh", () => {
       PATH: process.env.PATH,
     });
     expect(res.status).toBe(2);
-    expect((res.stdout || "") + (res.stderr || "")).toMatch(/Invalid --client/);
+    expect((res.stdout || "") + (res.stderr || "")).toMatch(/Invalid --client|잘못된 --client/);
   });
 
   it("detects Claude Code CLI first (even if opencode.jsonc exists) and runs `claude mcp add`", () => {
@@ -118,7 +110,6 @@ describe("skills/integration/scripts/install-mcp.sh", () => {
     );
 
     writeFakeNpm(binDir);
-    writeNodeShim(binDir);
 
     // Fake claude CLI with mcp support.
     writeExecutable(
@@ -167,7 +158,6 @@ exit 0
     const claudeLog = path.join(tmp, "claude.log");
 
     writeFakeNpm(binDir);
-    writeNodeShim(binDir);
 
     writeExecutable(
       path.join(binDir, "claude"),
@@ -183,7 +173,7 @@ exit 0
 
     const res = runScriptWithArgs(scriptPath, tmp, ["--client", "claude-code"], {
       HOME: homeDir,
-      PATH: `${binDir}:/usr/bin:/bin`,
+      PATH: `${binDir}:${nodeBinDir}:/usr/bin:/bin`,
     });
 
     expect(res.status).toBe(0);
@@ -197,7 +187,6 @@ exit 0
     const homeDir = path.join(tmp, "home");
 
     writeFakeNpm(binDir);
-    writeNodeShim(binDir);
 
     // Ensure Claude is NOT detected, so OpenCode path is chosen.
     // (No `claude` executable in PATH.)
@@ -219,7 +208,7 @@ exit 0
 
     const res = runScriptWithArgs(scriptPath, tmp, ["--client", "opencode"], {
       HOME: homeDir,
-      PATH: `${binDir}:/usr/bin:/bin`,
+      PATH: `${binDir}:${nodeBinDir}:/usr/bin:/bin`,
     });
 
     expect(res.status).toBe(0);
@@ -235,14 +224,13 @@ exit 0
     const homeDir = path.join(tmp, "home");
 
     writeFakeNpm(binDir);
-    writeNodeShim(binDir);
 
     const opencodePath = path.join(tmp, "opencode.jsonc");
     expect(fs.existsSync(opencodePath)).toBe(false);
 
     const res = runScriptWithArgs(scriptPath, tmp, ["--client", "opencode"], {
       HOME: homeDir,
-      PATH: `${binDir}:/usr/bin:/bin`,
+      PATH: `${binDir}:${nodeBinDir}:/usr/bin:/bin`,
     });
 
     expect(res.status).toBe(0);
@@ -264,7 +252,7 @@ exit 0
 
     const res = runScriptWithArgs(scriptPath, tmp, ["--client", "codex"], {
       HOME: homeDir,
-      PATH: `${binDir}:/usr/bin:/bin`,
+      PATH: `${binDir}:${nodeBinDir}:/usr/bin:/bin`,
     });
 
     expect(res.status).toBe(0);
@@ -279,7 +267,6 @@ exit 0
     const homeDir = path.join(tmp, "home");
 
     writeFakeNpm(binDir);
-    writeNodeShim(binDir);
 
     fs.mkdirSync(path.join(tmp, ".vscode"), { recursive: true });
     const settingsPath = path.join(tmp, ".vscode", "settings.json");
@@ -299,7 +286,7 @@ exit 0
 
     const res = runScriptWithArgs(scriptPath, tmp, ["--client", "amp"], {
       HOME: homeDir,
-      PATH: `${binDir}:/usr/bin:/bin`,
+      PATH: `${binDir}:${nodeBinDir}:/usr/bin:/bin`,
     });
 
     expect(res.status).toBe(0);
@@ -315,7 +302,6 @@ exit 0
     const homeDir = path.join(tmp, "home");
 
     writeFakeNpm(binDir);
-    writeNodeShim(binDir);
 
     const cursorPath = path.join(homeDir, ".cursor", "mcp.json");
     fs.mkdirSync(path.dirname(cursorPath), { recursive: true });
@@ -323,7 +309,7 @@ exit 0
 
     const res = runScriptWithArgs(scriptPath, tmp, ["--client", "cursor"], {
       HOME: homeDir,
-      PATH: `${binDir}:/usr/bin:/bin`,
+      PATH: `${binDir}:${nodeBinDir}:/usr/bin:/bin`,
     });
 
     expect(res.status).toBe(0);
@@ -338,14 +324,13 @@ exit 0
     const homeDir = path.join(tmp, "home");
 
     writeFakeNpm(binDir);
-    writeNodeShim(binDir);
 
     const vscodePath = path.join(homeDir, ".vscode", "mcp.json");
     expect(fs.existsSync(vscodePath)).toBe(false);
 
     const res = runScriptWithArgs(scriptPath, tmp, ["--client", "vscode"], {
       HOME: homeDir,
-      PATH: `${binDir}:/usr/bin:/bin`,
+      PATH: `${binDir}:${nodeBinDir}:/usr/bin:/bin`,
     });
 
     expect(res.status).toBe(0);
@@ -361,7 +346,6 @@ exit 0
     const claudeLog = path.join(tmp, "claude.log");
 
     writeFakeNpm(binDir);
-    writeNodeShim(binDir);
 
     // Fake claude CLI with mcp support.
     writeExecutable(
@@ -391,7 +375,7 @@ exit 0
 
     const res = runScriptWithArgs(scriptPath, tmp, ["--client", "claude"], {
       HOME: homeDir,
-      PATH: `${binDir}:/usr/bin:/bin`,
+      PATH: `${binDir}:${nodeBinDir}:/usr/bin:/bin`,
     });
 
     expect(res.status).toBe(0);
@@ -409,7 +393,6 @@ exit 0
     const homeDir = path.join(tmp, "home");
 
     writeFakeNpm(binDir);
-    writeNodeShim(binDir);
 
     // Make OpenCode detectable
     fs.writeFileSync(
@@ -436,7 +419,9 @@ exit 0
     });
 
     expect(res.status).toBe(2);
-    expect((res.stdout || "") + (res.stderr || "")).toMatch(/Multiple MCP clients detected/);
+    expect((res.stdout || "") + (res.stderr || "")).toMatch(
+      /Multiple MCP clients detected|여러 MCP 클라이언트/
+    );
     expect((res.stdout || "") + (res.stderr || "")).toMatch(/--client/);
   });
 });
