@@ -2,8 +2,8 @@
 name: notifly-integration
 description:
   노티플라이(Notifly) 모바일 SDK를 iOS, Android, Flutter, React Native
-  프로젝트에 연동합니다. 공식 Notifly 문서와 SDK 샘플을 **단일 기준(Source of
-  Truth)**으로 삼아 설치/초기화/MCP 설정/검증/트러블슈팅을 단계별로 안내합니다.
+  프로젝트에 연동합니다. 공식 Notifly 문서와 SDK 샘플을 단일 기준(Source of
+  Truth)으로 삼아 설치/초기화/MCP 설정/검증/트러블슈팅을 단계별로 안내합니다.
 ---
 
 # Notifly SDK 연동 스킬
@@ -12,8 +12,8 @@ description:
 
 - **한국어(기본)**: `SKILL.md`
 - **English**: `SKILL.en.md`
-- **Rule**: If the user is asking in English, follow `SKILL.en.md`. Otherwise,
-  follow this file.
+- **규칙**: 사용자가 영어로 질문하면 `SKILL.en.md`를 따르세요. 그렇지 않다면 이 파일을
+  따르세요.
 
 사용자가 **Notifly SDK**를 설치/설정/연동하려고 할 때 이 스킬을 사용하세요.
 대상은:
