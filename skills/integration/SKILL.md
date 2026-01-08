@@ -5,6 +5,7 @@ description:
   Web(JavaScript/Tag Manager) 프로젝트에 연동합니다. 공식 Notifly 문서와 SDK
   샘플을 단일 기준으로 삼아 설치/초기화/MCP 설정/검증/트러블슈팅을 단계별로
   안내합니다.
+user-invocable: true
 ---
 
 # Notifly SDK 연동 스킬

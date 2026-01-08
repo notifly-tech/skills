@@ -196,6 +196,10 @@ function getClientConfig(client: string): ClientConfig | null {
     }
 
     case "vscode":
+    case "github":
+    case "copilot":
+    case "github copilot":
+    case "github-copilot":
       return {
         path: path.join(home, ".vscode", "mcp.json"),
         configKey: "mcpServers",
