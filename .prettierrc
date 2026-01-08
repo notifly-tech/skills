@@ -29,6 +29,13 @@
       }
     },
     {
+      "files": "**/SKILL.md",
+      "options": {
+        "printWidth": 80,
+        "proseWrap": "always"
+      }
+    },
+    {
       "files": ["*.yaml", "*.yml"],
       "options": {
         "tabWidth": 2,
