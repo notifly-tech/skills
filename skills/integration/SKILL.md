@@ -5,6 +5,7 @@ description:
   Web(JavaScript/Tag Manager) 프로젝트에 연동합니다. 공식 Notifly 문서와 SDK
   샘플을 단일 기준으로 삼아 설치/초기화/MCP 설정/검증/트러블슈팅을 단계별로
   안내합니다.
+user-invocable: true
 ---
 
 # Notifly SDK 연동 스킬
@@ -33,9 +34,9 @@ description:
 ### 2단계: 기본 경로 (MCP 사용 가능)
 
 - `notifly-mcp-server:search_docs`로 대상 플랫폼의 **공식 설치/초기화 단계**를
-  확인
+확인
 - `notifly-mcp-server:search_sdk`로 **정확한 API 시그니처/공식 샘플 코드**를
-  확인
+확인
 - MCP 결과가 존재하면 이를 **단일 기준**으로 취급 (추측 금지)
 
 ### 3단계: 대체 경로 (MCP 사용 불가)
@@ -53,7 +54,7 @@ Cursor, Claude Code, Codex, Amp 등 AI IDE에서 이 스킬을 사용할 때:
 
 - **사전 탐색부터 시작**
   - 플랫폼(들)과 진입점을 식별 (`AppDelegate.swift`, `Application`, `main.dart`,
-    `index.js` 등)
+  `index.js` 등)
   - 수정할 파일을 미리 선언
 - **필요하면 질문**
   - RN/Flutter 같이 iOS/Android가 동시에 있는 경우, 어떤 플랫폼부터 할지 확인
@@ -86,7 +87,7 @@ MCP 도구가 없다면 먼저 `notifly-mcp-server`를 구성하세요:
   - **VAPID 키 생성**: 콘솔 **설정 → SDK 설정 → 웹사이트 설정**
   - **HTTPS 환경 권장/필수**: 브라우저 권한 정책 및 Service Worker 요구사항
   - **Service Worker 파일 제공**: 번들러 사용 시 SW 파일이 누락되지 않도록
-    public/static assets 복사 설정
+  public/static assets 복사 설정
 
 공식 가이드:
 
@@ -94,7 +95,7 @@ MCP 도구가 없다면 먼저 `notifly-mcp-server`를 구성하세요:
 - iOS: `https://docs.notifly.tech/ko/developer-guide/ios-sdk.md`
 - Flutter: `https://docs.notifly.tech/ko/developer-guide/flutter-sdk.md`
 - React Native:
-  `https://docs.notifly.tech/ko/developer-guide/react-native-sdk.md`
+`https://docs.notifly.tech/ko/developer-guide/react-native-sdk.md`
 - JavaScript(Web): `https://docs.notifly.tech/ko/developer-guide/javascript-sdk`
 
 ### 2단계: 자격 증명(SDK)
@@ -130,7 +131,7 @@ credentials.
 **우선순위 규칙(중요)**:
 
 - **React Native** 또는 **Flutter**가 확인되면, 네이티브 `ios/`, `android/`가
-  존재해도 **RN/Flutter를 1차 플랫폼**으로 취급합니다.
+존재해도 **RN/Flutter를 1차 플랫폼**으로 취급합니다.
 
 ### 4단계: SDK 설치 (플랫폼별)
 
@@ -169,7 +170,7 @@ credentials.
 
 - JitPack 저장소 추가
 - 의존성 추가:
-  `implementation 'com.github.team-michael:notifly-android-sdk:<latest>'`
+`implementation 'com.github.team-michael:notifly-android-sdk:<latest>'`
 
 **초기화(공식)**:
 
@@ -179,7 +180,7 @@ credentials.
 **유저 식별(초기화 후, 공식)**:
 
 - `Notifly.setUserId(context, userId)` (로그아웃 시:
-  `Notifly.setUserId(context, null)`)
+`Notifly.setUserId(context, null)`)
 - `Notifly.setUserProperties(context, params)`
 
 **이벤트 트래킹(초기화 후, 공식)**:
@@ -200,9 +201,9 @@ credentials.
 - `Firebase.initializeApp()` 보장
 - `await NotiflyPlugin.initialize(projectId: ..., username: ..., password: ...)`
 - (선택) 콘솔에서 “자동 권한 요청”이 비활성화된 경우:
-  `await NotiflyPlugin.requestPermission()`
+`await NotiflyPlugin.requestPermission()`
 - (선택) 인앱 팝업 이벤트 구독(공식 예시):
-  `NotiflyPlugin.inAppEvents.listen(...)`
+`NotiflyPlugin.inAppEvents.listen(...)`
 
 예시: `examples/flutter-integration.dart`
 
@@ -221,7 +222,7 @@ credentials.
 **JS API 사용(네이티브 연동 후)**:
 
 - `notifly.setUserId(userId)` (로그아웃: `notifly.setUserId(null)` 또는
-  `notifly.setUserId()`)
+`notifly.setUserId()`)
 - `notifly.setUserProperties({...})`
 - `notifly.setEmail(email)`
 - `notifly.setPhoneNumber(phoneNumber)`
@@ -261,7 +262,7 @@ credentials.
 
 - `projectId`, `username`, `password`는 코드에서 지정
 - (참고) SDK 2.5.0+에서는 웹 푸시 세부 옵션(VAPID/SW 경로/권한 팝업 등)이 콘솔
-  설정값으로 대체될 수 있음(공식 문서 우선)
+설정값으로 대체될 수 있음(공식 문서 우선)
 
 예시: `examples/web-integration.js`
 
@@ -269,7 +270,7 @@ credentials.
 
 - 콘솔에서 자동 권한 팝업을 켜면 방문 시 안내 → 브라우저 권한 요청 순서로 동작
 - 특정 타이밍에만 요청하려면(콘솔 자동 노출 OFF)
-  `notifly.requestPermission(...)`
+`notifly.requestPermission(...)`
 
 **5) 유저/이벤트(공식)**:
 
@@ -289,7 +290,7 @@ credentials.
 #### iOS 초기화 체크리스트
 
 - **엔트리포인트**: `AppDelegate.swift` (또는 SwiftUI에서
-  `@UIApplicationDelegateAdaptor(AppDelegate.self)` 사용)
+`@UIApplicationDelegateAdaptor(AppDelegate.self)` 사용)
 - **필수 포함**:
   - `FirebaseApp.configure()`
   - `Notifly.initialize(projectId:username:password)`
@@ -311,12 +312,12 @@ credentials.
 - **엔트리포인트**: `lib/main.dart` (+ iOS 브릿지 파일은 공식 문서대로)
 - **필수 포함**: `await NotiflyPlugin.initialize(...)`
 - **iOS 참고**: 공식 Flutter 문서는 `ios/Runner/AppDelegate.mm` 작업을 기대함
-  (`flutter-sdk.md` 참조)
+(`flutter-sdk.md` 참조)
 
 #### React Native 초기화 체크리스트
 
 - **네이티브**: 공식 RN 문서대로 iOS `AppDelegate.mm`, Android `Application`
-  연동 수행
+연동 수행
 - **JS**: 공식 RN SDK 샘플 패턴대로 API 사용(예시 파일 참조)
 
 ### 6단계: 검증(필수)
@@ -374,7 +375,7 @@ credentials.
 - 루트 경로에 Service Worker 파일 존재(예: `public/notifly-service-worker.js`)
 - SW 파일이 `NotiflyServiceWorker.js`를 importScripts 하는지 확인
 - 앱 코드에서 `notifly.initialize({ projectId, username, password, ... })` 호출
-  확인
+확인
 - (웹 푸시) 권한 요청 및 구독 흐름이 동작하는지 확인
 - `setUserId`, `setUserProperties`, `trackEvent` 호출이 제품 요구사항과 일치
 
@@ -418,3 +419,4 @@ credentials.
 
 - `scripts/install-mcp.sh` (클라이언트에 MCP 서버 구성)
 - `scripts/validate-sdk.sh` (SDK 연동 마커 검증)
+
