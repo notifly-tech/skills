@@ -16,9 +16,9 @@ you can install skills in different ways.
 
 ### Universal CLI (Recommended)
 
-For Amp, Claude Code, Codex, Copilot, Cursor, Goose, Letta, OpenCode, and VS
-Code, we recommend using our installer to set up the skills and automatically
-configure the Notifly MCP Server.
+For Amp, Claude Code, Codex, Copilot, Cursor, Gemini, Goose, Letta, OpenCode,
+and VS Code, we recommend using our installer to set up the skills and
+automatically configure the Notifly MCP Server.
 
 #### Installation Modes
 
@@ -69,6 +69,7 @@ npx notifly-agent-skills@latest install --all --client cursor --global
 | Claude Code    | `--client claude` (or `claude-code`) | `.claude/skills/`  |
 | Codex          | `--client codex`                     | `.codex/skills/`   |
 | Cursor         | `--client cursor`                    | `.cursor/skills/`  |
+| Gemini CLI     | `--client gemini`                    | `.gemini/skills/`  |
 | GitHub Copilot | `--client github`                    | `.github/skills/`  |
 | Goose          | `--client goose`                     | `.goose/skills/`   |
 | Letta          | `--client letta`                     | `.skills/`         |

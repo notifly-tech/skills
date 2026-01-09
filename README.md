@@ -20,8 +20,8 @@ AI 클라이언트(예: Cursor, Claude Code, Codex, VS Code 등)에서 불러와
 
 ### Universal CLI (권장)
 
-Amp, Claude Code, Codex, Copilot, Cursor, Goose, Letta, OpenCode, VS Code 등의
-클라이언트에서는 `notifly-agent-skills` 패키지가 제공하는 **Universal CLI**를
+Amp, Claude Code, Codex, Copilot, Cursor, Gemini, Goose, Letta, OpenCode, VS Code
+등의 클라이언트에서는 `notifly-agent-skills` 패키지가 제공하는 **Universal CLI**를
 사용하여 스킬을 설치하고 노티플라이 MCP 서버를 자동으로 구성하는 것을
 권장합니다.
 
@@ -79,6 +79,7 @@ npx notifly-agent-skills@latest install --all --client cursor --global
 | Claude Code    | `--client claude` (또는 `claude-code`) | `.claude/skills/`  |
 | Codex          | `--client codex`                       | `.codex/skills/`   |
 | Cursor         | `--client cursor`                      | `.cursor/skills/`  |
+| Gemini CLI     | `--client gemini`                      | `.gemini/skills/`  |
 | GitHub Copilot | `--client github`                      | `.github/skills/`  |
 | Goose          | `--client goose`                       | `.goose/skills/`   |
 | Letta          | `--client letta`                       | `.skills/`         |
