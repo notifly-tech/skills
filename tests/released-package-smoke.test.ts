@@ -28,7 +28,7 @@ type VerifyResult = { valid: boolean; missing: string[]; found: string[] };
 /**
  * Verify all necessary files are present in a skill folder
  */
-function verifySkillFiles(skillPath: string, _skillName: string): VerifyResult {
+function verifySkillFiles(skillPath: string): VerifyResult {
   const requiredFiles = ["SKILL.md", "LICENSE.txt"];
   const requiredDirs = ["references", "scripts"];
 
@@ -49,11 +49,16 @@ function verifySkillFiles(skillPath: string, _skillName: string): VerifyResult {
   for (const dir of requiredDirs) {
     const dirPath = path.join(skillPath, dir);
     if (fs.existsSync(dirPath) && fs.statSync(dirPath).isDirectory()) {
-      const files = fs.readdirSync(dirPath);
-      if (files.length > 0) {
-        found.push(`${dir}/ (${files.length} files)`);
-      } else {
-        missing.push(`${dir}/ (empty)`);
+      try {
+        const files = fs.readdirSync(dirPath);
+        if (files.length > 0) {
+          found.push(`${dir}/ (${files.length} files)`);
+        } else {
+          missing.push(`${dir}/ (empty)`);
+        }
+      } catch (error) {
+        // Directory might have been deleted or become inaccessible
+        missing.push(`${dir}/ (unreadable)`);
       }
     } else {
       missing.push(`${dir}/ (missing)`);
@@ -63,9 +68,13 @@ function verifySkillFiles(skillPath: string, _skillName: string): VerifyResult {
   // Optional: examples directory (nice to have, but not required)
   const examplesPath = path.join(skillPath, "examples");
   if (fs.existsSync(examplesPath) && fs.statSync(examplesPath).isDirectory()) {
-    const exampleFiles = fs.readdirSync(examplesPath);
-    if (exampleFiles.length > 0) {
-      found.push(`examples/ (${exampleFiles.length} files)`);
+    try {
+      const exampleFiles = fs.readdirSync(examplesPath);
+      if (exampleFiles.length > 0) {
+        found.push(`examples/ (${exampleFiles.length} files)`);
+      }
+    } catch {
+      // Examples directory is optional, so ignore read errors
     }
   }
 
@@ -77,6 +86,13 @@ function writeJson(filePath: string, data: unknown) {
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + "\n", "utf8");
 }
 
+/**
+ * Seeds MCP configuration for test clients to avoid interactive prompts during testing.
+ *
+ * Note: Some clients are intentionally excluded:
+ * - claude/claude-code: Uses CLI-based configuration via `claude mcp add` (see src/bin/utils/mcp.ts:84-129)
+ * - goose/letta: MCP configuration not yet implemented/documented
+ */
 function seedMcpConfig(homeDir: string, client: string) {
   const notiflyServer = {
     command: "npx",
@@ -118,6 +134,7 @@ function seedMcpConfig(homeDir: string, client: string) {
         mcpServers: { "notifly-mcp-server": notiflyServer },
       });
       return;
+    case "copilot":
     case "github":
     case "vscode":
       writeJson(path.join(homeDir, ".vscode", "mcp.json"), {
@@ -142,6 +159,7 @@ function seedMcpConfig(homeDir: string, client: string) {
       });
       return;
     default:
+      // For clients without file-based MCP config or unsupported clients
       return;
   }
 }
@@ -172,13 +190,14 @@ describe("released package smoke test (npm)", () => {
   // Currently only one skill is shipped, but this keeps the test structure future-proof.
   const expectedSkills = ["integration"];
 
-  // Keep this aligned with src/bin/commands/install.ts default paths.
+  // Keep this aligned with src/bin/commands/install.ts default paths (lines 70-109).
   const clients: Array<{ name: string; path: string }> = [
     { name: "amazonq", path: ".amazonq/skills" },
     { name: "amp", path: ".amp/skills" },
     { name: "claude", path: ".claude/skills" },
     { name: "claude-code", path: ".claude/skills" },
     { name: "codex", path: ".codex/skills" },
+    { name: "copilot", path: ".github/skills" },
     { name: "cursor", path: ".cursor/skills" },
     { name: "gemini", path: ".gemini/skills" },
     { name: "github", path: ".github/skills" },
@@ -245,7 +264,8 @@ describe("released package smoke test (npm)", () => {
         const cliRes = run("npx", installCmd, projectDir, env);
 
         // Primary assertion: skills installed in correct path
-        const installedSkillsRoot = path.join(projectDir, ...expectedPath.split("/"));
+        // path.join handles path separators correctly across platforms
+        const installedSkillsRoot = path.join(projectDir, expectedPath);
 
         const installedSkills: string[] = [];
         const missingSkills: string[] = [];
@@ -256,7 +276,7 @@ describe("released package smoke test (npm)", () => {
           const skillMd = path.join(skillPath, "SKILL.md");
           if (fs.existsSync(skillMd)) {
             installedSkills.push(skill);
-            const check = verifySkillFiles(skillPath, skill);
+            const check = verifySkillFiles(skillPath);
             if (!check.valid) {
               skillFileIssues.push({ skill, missing: check.missing });
             }
