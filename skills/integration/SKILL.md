@@ -1,5 +1,7 @@
 ---
 name: notifly-integration
+display-name: SDK Integration
+short-description: SDK integration guide
 description:
   노티플라이(Notifly) SDK를 Mobile(iOS/Android/Flutter/React Native) 및
   Web(JavaScript/Tag Manager) 프로젝트에 연동합니다. 공식 Notifly 문서와 SDK
