@@ -186,22 +186,9 @@ function getClientConfig(client: string): ClientConfig | null {
   const home = os.homedir();
 
   switch (client.toLowerCase()) {
-    case "cursor": {
-      // MCP is always configured globally
+    case "amazonq":
       return {
-        path: path.join(home, ".cursor", "mcp.json"),
-        configKey: "mcpServers",
-        format: "json",
-      };
-    }
-
-    case "vscode":
-    case "github":
-    case "copilot":
-    case "github copilot":
-    case "github-copilot":
-      return {
-        path: path.join(home, ".vscode", "mcp.json"),
+        path: path.join(home, ".aws", "amazonq", "agents", "default.json"),
         configKey: "mcpServers",
         format: "json",
       };
@@ -221,26 +208,47 @@ function getClientConfig(client: string): ClientConfig | null {
       return { path: ampConfigPath, configKey: "amp.mcpServers", format: "json" };
     }
 
+    case "codex":
+      return {
+        path: path.join(home, ".codex", "config.toml"),
+        configKey: "mcp_servers",
+        format: "toml",
+      };
+
+    case "cursor": {
+      // MCP is always configured globally
+      return {
+        path: path.join(home, ".cursor", "mcp.json"),
+        configKey: "mcpServers",
+        format: "json",
+      };
+    }
+
+    case "gemini":
+      // Gemini CLI stores MCP server configuration in `~/.gemini/settings.json` (user scope)
+      return {
+        path: path.join(home, ".gemini", "settings.json"),
+        configKey: "mcpServers",
+        format: "json",
+      };
+
+    case "vscode":
+    case "github":
+    case "copilot":
+    case "github copilot":
+    case "github-copilot":
+      return {
+        path: path.join(home, ".vscode", "mcp.json"),
+        configKey: "mcpServers",
+        format: "json",
+      };
+
     case "kiro":
       // MCP is always configured globally
       return {
         path: path.join(home, ".kiro", "settings", "mcp.json"),
         configKey: "mcpServers",
         format: "json",
-      };
-
-    case "amazonq":
-      return {
-        path: path.join(home, ".aws", "amazonq", "agents", "default.json"),
-        configKey: "mcpServers",
-        format: "json",
-      };
-
-    case "codex":
-      return {
-        path: path.join(home, ".codex", "config.toml"),
-        configKey: "mcp_servers",
-        format: "toml",
       };
 
     default:
@@ -429,17 +437,18 @@ export async function configureMCP(client?: string): Promise<void> {
         name: "client",
         message: "Which AI client are you using?",
         choices: [
-          { name: "Cursor", value: "cursor" },
-          { name: "Claude Code", value: "claude" },
-          { name: "VS Code", value: "vscode" },
-          { name: "Amp", value: "amp" },
-          { name: "Kiro", value: "kiro" },
           { name: "Amazon Q", value: "amazonq" },
+          { name: "Amp", value: "amp" },
+          { name: "Claude Code", value: "claude" },
           { name: "Codex", value: "codex" },
-          { name: "OpenCode", value: "opencode" },
-          { name: "Letta", value: "letta" },
-          { name: "Goose", value: "goose" },
+          { name: "Cursor", value: "cursor" },
+          { name: "Gemini CLI", value: "gemini" },
           { name: "GitHub", value: "github" },
+          { name: "Goose", value: "goose" },
+          { name: "Kiro", value: "kiro" },
+          { name: "Letta", value: "letta" },
+          { name: "OpenCode", value: "opencode" },
+          { name: "VS Code", value: "vscode" },
           { name: "None / Manual", value: "manual" },
         ],
       },

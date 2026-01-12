@@ -6,7 +6,11 @@ import path from "path";
 const nodeBinDir = path.dirname(process.execPath);
 
 function makeTempDir(): string {
-  return fs.mkdtempSync(path.join(os.tmpdir(), "notifly-agent-skills-"));
+  // In sandboxed environments, writing to OS temp directories (e.g. /var/folders on macOS)
+  // can be disallowed. Create temp dirs within the repo instead.
+  const base = path.join(process.cwd(), ".tmp-test");
+  fs.mkdirSync(base, { recursive: true });
+  return fs.mkdtempSync(path.join(base, "notifly-agent-skills-"));
 }
 
 function writeExecutable(filePath: string, content: string) {
@@ -335,6 +339,28 @@ exit 0
 
     expect(res.status).toBe(0);
     const updated = fs.readFileSync(vscodePath, "utf8");
+    expect(updated).toMatch(/"mcpServers"/);
+    expect(updated).toMatch(/"notifly-mcp-server"/);
+  });
+
+  it("writes Gemini CLI settings.json when using --client gemini", () => {
+    const tmp = makeTempDir();
+    const binDir = path.join(tmp, "bin");
+    const homeDir = path.join(tmp, "home");
+
+    writeFakeNpm(binDir);
+
+    const geminiPath = path.join(homeDir, ".gemini", "settings.json");
+    fs.mkdirSync(path.dirname(geminiPath), { recursive: true });
+    fs.writeFileSync(geminiPath, `{"mcpServers": {}}\n`, "utf8");
+
+    const res = runScriptWithArgs(scriptPath, tmp, ["--client", "gemini"], {
+      HOME: homeDir,
+      PATH: `${binDir}:${nodeBinDir}:/usr/bin:/bin`,
+    });
+
+    expect(res.status).toBe(0);
+    const updated = fs.readFileSync(geminiPath, "utf8");
     expect(updated).toMatch(/"mcpServers"/);
     expect(updated).toMatch(/"notifly-mcp-server"/);
   });

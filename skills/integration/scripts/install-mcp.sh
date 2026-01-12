@@ -31,7 +31,7 @@ Notifly MCP 서버 설치 스크립트
 
 옵션:
   --client <client>      설정할 MCP 클라이언트를 명시적으로 선택합니다.
-                         지원: claude, claude-code, opencode, amp, codex, cursor, vscode
+                         지원: claude, claude-code, opencode, amp, codex, cursor, vscode, gemini
   --help                 이 도움말을 표시합니다.
 
 환경 변수:
@@ -70,7 +70,7 @@ done
 
 validate_client() {
   case "${1:-}" in
-    claude|claude-code|opencode|amp|codex|cursor|vscode) return 0 ;;
+    claude|claude-code|opencode|amp|codex|cursor|vscode|gemini) return 0 ;;
     "") return 1 ;;
     *) return 1 ;;
   esac
@@ -114,6 +114,10 @@ get_config_path() {
       ;;
     vscode)
       echo "${home}/.vscode/mcp.json"
+      ;;
+    gemini)
+      # Gemini CLI stores MCP server configuration in `~/.gemini/settings.json` (user scope).
+      echo "${home}/.gemini/settings.json"
       ;;
     amp)
       # Amp는 VS Code settings.json 포맷을 사용
@@ -482,6 +486,11 @@ detect_clients() {
     echo "claude"
   fi
 
+  # Gemini CLI (user scope config file or gemini command)
+  if [ -f "${HOME}/.gemini/settings.json" ] || command -v gemini &> /dev/null; then
+    echo "gemini"
+  fi
+
   # OpenCode (프로젝트 설정 파일 또는 opencode 커맨드)
   if [ -f "opencode.json" ] || [ -f "opencode.jsonc" ] || command -v opencode &> /dev/null; then
     echo "opencode"
@@ -613,6 +622,7 @@ else
   log "${BLUE}  - Amp: .vscode/settings.json 또는 ~/.vscode/settings.json에 추가${RESET}"
   log "${BLUE}  - Codex: ~/.codex/config.toml에 추가${RESET}"
   log "${BLUE}  - Cursor: .cursor/mcp.json 또는 ~/.cursor/mcp.json에 추가${RESET}"
+  log "${BLUE}  - Gemini CLI: ~/.gemini/settings.json에 추가${RESET}"
   log "${BLUE}  - Claude Code: 실행: claude mcp add --transport stdio notifly-mcp-server -- npx -y notifly-mcp-server@latest${RESET}"
   log "${BLUE}자세한 안내는 references/mcp-integration.md를 참고하세요.${RESET}"
 fi

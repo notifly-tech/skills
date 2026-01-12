@@ -162,6 +162,33 @@ yarn global add notifly-mcp-server@latest
 }
 ```
 
+#### Gemini CLI
+
+Gemini CLI는 유저 스코프 설정 파일인 `~/.gemini/settings.json`에 MCP 서버를
+구성합니다.
+
+1. `~/.gemini/settings.json` 열기(없으면 생성)
+2. `mcpServers`에 아래를 추가하고 Gemini CLI를 재시작:
+
+```json
+{
+  "mcpServers": {
+    "notifly-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "notifly-mcp-server@latest"]
+    }
+  }
+}
+```
+
+**체크(권장)**:
+
+- 파일 체크: `~/.gemini/settings.json`에 `mcpServers.notifly-mcp-server`가
+  있는지 확인
+- 동작 체크: Gemini CLI에서 “Notifly 문서를 찾아줘” 같은 요청을 하면서
+  `notifly-mcp-server:search_docs` / `notifly-mcp-server:search_sdk` 툴이
+  노출되는지 확인
+
 #### Amazon Q
 
 **수동 설정**

@@ -96,6 +96,29 @@ describe("installSkill", () => {
     expect(mockedFs.copy).toHaveBeenCalledWith(expect.any(String), expectedDest);
   });
 
+  it("should install to .gemini/skills when client is gemini", async () => {
+    await installSkill("integration", { client: "gemini" });
+
+    const expectedDest = path.resolve(process.cwd(), ".gemini/skills/integration");
+    expect(mockedFs.copy).toHaveBeenCalledWith(expect.any(String), expectedDest);
+  });
+
+  it("should install to .gemini/skills in project root when client is gemini without global flag", async () => {
+    await installSkill("integration", { client: "gemini", global: false });
+
+    const expectedDest = path.resolve(process.cwd(), ".gemini/skills/integration");
+    expect(mockedFs.copy).toHaveBeenCalledWith(expect.any(String), expectedDest);
+    expect(mockSpinner.succeed).toHaveBeenCalledWith(expect.stringContaining("repo root"));
+  });
+
+  it("should install to .gemini/skills in system root when client is gemini with global flag", async () => {
+    await installSkill("integration", { client: "gemini", global: true });
+
+    const expectedDest = path.resolve(mockHomeDir, ".gemini/skills/integration");
+    expect(mockedFs.copy).toHaveBeenCalledWith(expect.any(String), expectedDest);
+    expect(mockSpinner.succeed).toHaveBeenCalledWith(expect.stringContaining("system root"));
+  });
+
   it("should install to .opencode/skill when client is opencode", async () => {
     await installSkill("integration", { client: "opencode" });
 
@@ -158,6 +181,11 @@ describe("installSkill", () => {
   it("should attempt to configure MCP for Claude Code when client is claude-code", async () => {
     await installSkill("integration", { client: "claude-code" });
     expect(mockedConfigureMCP).toHaveBeenCalledWith("claude-code");
+  });
+
+  it("should attempt to configure MCP for Gemini when client is gemini", async () => {
+    await installSkill("integration", { client: "gemini" });
+    expect(mockedConfigureMCP).toHaveBeenCalledWith("gemini");
   });
 
   it("should handle copy errors gracefully", async () => {
@@ -323,7 +351,7 @@ describe("installSkill", () => {
     });
 
     it("should install to system root for multiple clients when global is true", async () => {
-      const clients = ["cursor", "claude", "vscode", "amp", "kiro"];
+      const clients = ["cursor", "claude", "vscode", "amp", "kiro", "gemini"];
 
       for (const client of clients) {
         jest.clearAllMocks();
@@ -339,7 +367,7 @@ describe("installSkill", () => {
     });
 
     it("should install to project root for multiple clients when global is false", async () => {
-      const clients = ["cursor", "claude", "vscode", "amp", "kiro"];
+      const clients = ["cursor", "claude", "vscode", "amp", "kiro", "gemini"];
 
       for (const client of clients) {
         jest.clearAllMocks();

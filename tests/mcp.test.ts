@@ -25,6 +25,7 @@ describe("configureMCP", () => {
     mockedFs.readJSON.mockResolvedValue({ mcpServers: {} });
     mockedFs.writeJSON.mockResolvedValue(undefined);
     mockedSpawnSync.mockReset();
+    mockedInquirer.prompt.mockReset();
   });
 
   it("should prompt for client if not provided", async () => {
@@ -40,6 +41,106 @@ describe("configureMCP", () => {
   it("should skip if client is manual", async () => {
     await configureMCP("manual");
     expect(mockedFs.readJSON).not.toHaveBeenCalled();
+  });
+
+  describe("Gemini CLI (settings.json) - Notifly MCP", () => {
+    it("should configure Gemini CLI via ~/.gemini/settings.json (mcpServers)", async () => {
+      mockedInquirer.prompt.mockResolvedValueOnce({ inject: true });
+
+      await configureMCP("gemini");
+
+      const globalPath = path.join(mockHome, ".gemini", "settings.json");
+      expect(mockedFs.readJSON).toHaveBeenCalledWith(globalPath);
+      expect(mockedFs.writeJSON).toHaveBeenCalledWith(
+        globalPath,
+        expect.objectContaining({
+          mcpServers: expect.objectContaining({
+            "notifly-mcp-server": expect.objectContaining({
+              command: "npx",
+              args: ["-y", "notifly-mcp-server@latest"],
+            }),
+          }),
+        }),
+        expect.anything()
+      );
+    });
+
+    it("should prompt to create ~/.gemini/settings.json when missing and user declines", async () => {
+      const globalPath = path.join(mockHome, ".gemini", "settings.json");
+      mockedFs.existsSync.mockImplementation((p) => String(p) !== globalPath);
+      mockedInquirer.prompt.mockResolvedValueOnce({ create: false });
+
+      await configureMCP("gemini");
+
+      expect(mockedFs.ensureDir).not.toHaveBeenCalled();
+      expect(mockedFs.writeJSON).not.toHaveBeenCalled();
+      expect(mockedFs.readJSON).not.toHaveBeenCalled();
+    });
+
+    it("should create ~/.gemini/settings.json when missing and user confirms, then inject server", async () => {
+      const globalPath = path.join(mockHome, ".gemini", "settings.json");
+      mockedFs.existsSync.mockImplementation((p) => String(p) !== globalPath);
+      mockedInquirer.prompt.mockResolvedValueOnce({ create: true });
+      mockedInquirer.prompt.mockResolvedValueOnce({ inject: true });
+
+      await configureMCP("gemini");
+
+      expect(mockedFs.ensureDir).toHaveBeenCalledWith(path.dirname(globalPath));
+      expect(mockedFs.writeJSON).toHaveBeenCalledTimes(2);
+      expect(mockedFs.writeJSON).toHaveBeenNthCalledWith(
+        1,
+        globalPath,
+        expect.objectContaining({ mcpServers: {} }),
+        expect.anything()
+      );
+      expect(mockedFs.writeJSON).toHaveBeenNthCalledWith(
+        2,
+        globalPath,
+        expect.objectContaining({
+          mcpServers: expect.objectContaining({
+            "notifly-mcp-server": expect.anything(),
+          }),
+        }),
+        expect.anything()
+      );
+    });
+
+    it("should not prompt to inject when notifly-mcp-server is already configured for Gemini", async () => {
+      mockedFs.readJSON.mockResolvedValueOnce({
+        mcpServers: { "notifly-mcp-server": { command: "npx", args: ["-y", "already"] } },
+      });
+
+      await configureMCP("gemini");
+
+      expect(mockedInquirer.prompt).not.toHaveBeenCalledWith(
+        expect.arrayContaining([expect.objectContaining({ name: "inject" })])
+      );
+      expect(mockedFs.writeJSON).not.toHaveBeenCalled();
+    });
+
+    it("should preserve unrelated keys in ~/.gemini/settings.json when injecting", async () => {
+      mockedFs.readJSON.mockResolvedValueOnce({
+        mcpServers: {},
+        theme: "dark",
+        nested: { keep: true },
+      });
+      mockedInquirer.prompt.mockResolvedValueOnce({ inject: true });
+
+      await configureMCP("gemini");
+
+      const globalPath = path.join(mockHome, ".gemini", "settings.json");
+      expect(mockedFs.writeJSON).toHaveBeenCalledWith(
+        globalPath,
+        expect.objectContaining({
+          theme: "dark",
+          nested: { keep: true },
+          mcpServers: expect.objectContaining({
+            "notifly-mcp-server": expect.anything(),
+          }),
+        }),
+        expect.anything()
+      );
+    });
   });
 
   it("should configure Claude via `claude mcp add` (no config file edits)", async () => {
@@ -187,6 +288,42 @@ describe("configureMCP", () => {
 
     // help + list only; no add
     expect(mockedSpawnSync).toHaveBeenCalledTimes(2);
+  });
+
+  it("should handle null stdout/stderr in listRes when checking for existing server", async () => {
+    mockedSpawnSync
+      .mockReturnValueOnce({ status: 0, stdout: "help", stderr: "", error: undefined }) // mcp --help
+      .mockReturnValueOnce({
+        status: 0,
+        stdout: null,
+        stderr: undefined,
+        error: undefined,
+      }) // mcp list with null/undefined stdout/stderr
+      .mockReturnValueOnce({ status: 0, stdout: "added", stderr: "", error: undefined }); // mcp add
+
+    await configureMCP("claude");
+
+    // Should proceed with add since server not found
+    expect(mockedSpawnSync).toHaveBeenCalledTimes(3);
+  });
+
+  it("should handle null stdout/stderr in addRes when add fails", async () => {
+    const consoleSpy = jest.spyOn(console, "log").mockImplementation();
+    mockedSpawnSync
+      .mockReturnValueOnce({ status: 0, stdout: "help", stderr: "", error: undefined }) // mcp --help
+      .mockReturnValueOnce({ status: 0, stdout: "", stderr: "", error: undefined }) // mcp list (not present)
+      .mockReturnValueOnce({
+        status: 1,
+        stdout: null,
+        stderr: undefined,
+        error: undefined,
+      }); // mcp add fails with null/undefined stdout/stderr
+
+    await configureMCP("claude");
+
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringMatching(/No output captured/));
+
+    consoleSpy.mockRestore();
   });
 
   it("should treat claude-code as an alias for claude", async () => {
