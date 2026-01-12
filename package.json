@@ -16,6 +16,7 @@
     "start": "node dist/bin/cli.js",
     "dev": "ts-node src/bin/cli.ts",
     "test": "jest",
+    "test:released": "cross-env NOTIFLY_RELEASE_SMOKE_TEST=1 jest --runInBand tests/released-package-smoke.test.ts",
     "lint": "prettier --check .",
     "lint:fix": "prettier --write .",
     "sync-version": "ts-node scripts/sync-version.ts",
