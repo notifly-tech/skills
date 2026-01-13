@@ -68,8 +68,8 @@ npx notifly-agent-skills@latest install --all --client cursor --global
 - **notifly-integration**: iOS, Android, Flutter, React Native 프로젝트에
   노티플라이 모바일 SDK를 통합하고 노티플라이 MCP 서버를 함께 구성해 주는
   스킬입니다.
-- **notifly-skill-creator**: 새로운 노티플라이 에이전트 스킬을 생성하는
-  “메타 스킬”입니다. MCP 우선 근거(문서/SDK) 수집 후, 스킬 폴더(SKILL.md +
+- **notifly-skill-creator**: 새로운 노티플라이 에이전트 스킬을 생성하는 “메타
+  스킬”입니다. MCP 우선 근거(문서/SDK) 수집 후, 스킬 폴더(SKILL.md +
   references + scripts + examples)를 생성하고 검증 스크립트를 포함하도록
   안내합니다. 설치는 `install skill-creator`로 진행합니다.
 

@@ -92,7 +92,9 @@ describe("skill-creator validator: validate-skill-scaffold.sh", () => {
     const dir = makeMinimalSkill({ name: "clix-test-skill" });
     const res = runValidateSkillScaffold(dir);
     expect(res.status).toBe(1);
-    expect((res.stdout || "") + (res.stderr || "")).toMatch(/프론트매터 name은 'notifly-'로 시작해야 합니다/);
+    expect((res.stdout || "") + (res.stderr || "")).toMatch(
+      /프론트매터 name은 'notifly-'로 시작해야 합니다/
+    );
   });
 
   it("fails when SKILL.md does not reference notifly-mcp-server", () => {
@@ -106,14 +108,17 @@ describe("skill-creator validator: validate-skill-scaffold.sh", () => {
     const dir = makeMinimalSkill({ name: "notifly-test-skill", nonEmptyReferences: false });
     const res = runValidateSkillScaffold(dir);
     expect(res.status).toBe(1);
-    expect((res.stdout || "") + (res.stderr || "")).toMatch(/필수 디렉터리가 비어 있습니다: references\//);
+    expect((res.stdout || "") + (res.stderr || "")).toMatch(
+      /필수 디렉터리가 비어 있습니다: references\//
+    );
   });
 
   it("fails when scripts/ exists but is empty", () => {
     const dir = makeMinimalSkill({ name: "notifly-test-skill", nonEmptyScripts: false });
     const res = runValidateSkillScaffold(dir);
     expect(res.status).toBe(1);
-    expect((res.stdout || "") + (res.stderr || "")).toMatch(/필수 디렉터리가 비어 있습니다: scripts\//);
+    expect((res.stdout || "") + (res.stderr || "")).toMatch(
+      /필수 디렉터리가 비어 있습니다: scripts\//
+    );
   });
 });
-

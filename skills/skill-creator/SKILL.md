@@ -178,5 +178,6 @@ bash <skill-dir>/scripts/validate-skill-scaffold.sh path/to/new-skill-folder
 
 ## 참고(References)
 
+- `references/quick-start-guide.md` (처음 스킬을 만든다면 여기서 시작)
 - `references/skill-template.md`
 - `references/mcp-research-playbook.md`
