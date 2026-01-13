@@ -36,3 +36,26 @@ Each entry includes the file path, type, and description for semantic search.
 
 ---
 
+## notifly-skill-creator
+
+- [notifly-skill-creator](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/skill-creator/SKILL.md): Main skill documentation
+
+### References
+
+- [Quick Start Guide (Reference)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/skill-creator/references/quick-start-guide.md): Step-by-step guide for creating your first Notifly skill
+- [Mcp Research Playbook (Reference)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/skill-creator/references/mcp-research-playbook.md): Reference documentation for skill-creator skill
+- [Skill Template (Reference)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/skill-creator/references/skill-template.md): Reference documentation for skill-creator skill
+
+### Examples
+
+- [Skill Brief Example (Example)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/skill-creator/examples/skill-brief-example.yaml): Complex skill brief example for push troubleshooting
+- [Skill Brief Simple (Example)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/skill-creator/examples/skill-brief-simple.yaml): Simple skill brief example for event tracking helper
+
+### Scripts
+
+- [Validate Same Scope (Script)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/skill-creator/scripts/validate-same-scope.sh): Utility script for skill-creator skill
+- [Validate Skill Location (Script)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/skill-creator/scripts/validate-skill-location.sh): Utility script for skill-creator skill
+- [Validate Skill Scaffold (Script)](https://raw.githubusercontent.com/notifly-tech/skills/refs/heads/main/skills/skill-creator/scripts/validate-skill-scaffold.sh): Utility script for skill-creator skill
+
+---
+

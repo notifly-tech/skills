@@ -1,0 +1,40 @@
+skill:
+  folder_name: 'push-troubleshooting'
+  name: 'notifly-push-troubleshooting'
+  display_name: '푸시 트러블슈팅'
+  short_description: '푸시 전송/표시 문제 디버깅'
+  description: >
+    개발자가 푸시 알림의 전송, 권한, 토큰 등록, 템플릿 렌더링 문제를 진단하도록 돕습니다.
+    SDK 시그니처와 문서 동작은 Notifly MCP Server를 단일 진실원으로 사용합니다.
+  user_invocable: true
+
+triggers:
+  - '푸시 알림이 안 와요'
+  - 'APNs 토큰이 등록되지 않아요'
+  - 'FCM 토큰이 바뀌었어요'
+  - '메시지 로그에 템플릿 오류가 떠요'
+
+inputs:
+  - '플랫폼(iOS/Android/Flutter/React Native)'
+  - '앱 상태(신규 설치 vs 업데이트)'
+  - 'Notifly 메시지 로그에서 보이는 내용(가능하다면)'
+
+outputs:
+  - '단계별 디버깅 플랜'
+  - '최소 재현 체크리스트'
+  - '필요 시 초기화/토큰 등록을 수정하는 코드 변경'
+
+guardrails:
+  - 'MCP-first: notifly-mcp-server:search_sdk 없이 SDK 시그니처를 단정하지 않기'
+  - '시크릿 금지: 토큰/ID는 마스킹 또는 제거'
+  - '트러블슈팅에 특화되지 않았다면 notifly-integration과 스코프 중복 피하기'
+
+files_to_generate:
+  skill_md: true
+  references:
+    - 'debugging-checklist.md'
+    - 'common-failure-modes.md'
+  scripts:
+    - 'validate-debug-plan.sh'
+  examples:
+    - 'sample-log-snippets.md'

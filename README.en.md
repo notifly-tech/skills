@@ -50,7 +50,7 @@ npx notifly-agent-skills@latest install integration --client cursor --global
 
 # Install all available skills at once (repo root)
 npx notifly-agent-skills@latest install --all --client cursor
-# Currently, this installs: integration
+# Currently, this installs: integration, skill-creator
 
 # Install all available skills globally (system root)
 npx notifly-agent-skills@latest install --all --client cursor --global
@@ -60,6 +60,9 @@ npx notifly-agent-skills@latest install --all --client cursor --global
 
 - **notifly-integration**: Integrate Notifly Mobile SDK into iOS, Android,
   Flutter, and React Native projects, and configure the Notifly MCP Server.
+- **notifly-skill-creator**: Meta-skill for authors to generate new Notifly
+  agent skills (SKILL.md + references + scripts + examples) with MCP-first
+  evidence and deterministic validators. Install via `install skill-creator`.
 
 **Supported Clients:**
 
