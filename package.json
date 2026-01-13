@@ -1,6 +1,6 @@
 {
   "name": "notifly-agent-skills",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "An open collection of agent skills for Notifly.",
   "main": "dist/index.js",
   "bin": {
