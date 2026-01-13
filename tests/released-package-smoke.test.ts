@@ -190,10 +190,11 @@ describe("released package smoke test (npm)", () => {
   // Currently only one skill is shipped, but this keeps the test structure future-proof.
   const expectedSkills = ["integration"];
 
-  // Keep this aligned with src/bin/commands/install.ts default paths (lines 70-109).
+  // Keep this aligned with src/bin/commands/install.ts default paths.
   const clients: Array<{ name: string; path: string }> = [
     { name: "amazonq", path: ".amazonq/skills" },
-    { name: "amp", path: ".amp/skills" },
+    // Amp installs skills to `.agents/skills/` at repo root.
+    { name: "amp", path: ".agents/skills" },
     { name: "claude", path: ".claude/skills" },
     { name: "claude-code", path: ".claude/skills" },
     { name: "codex", path: ".codex/skills" },
@@ -201,7 +202,8 @@ describe("released package smoke test (npm)", () => {
     { name: "cursor", path: ".cursor/skills" },
     { name: "gemini", path: ".gemini/skills" },
     { name: "github", path: ".github/skills" },
-    { name: "goose", path: ".goose/skills" },
+    // Goose uses the portable `.agents/skills/` location at repo root.
+    { name: "goose", path: ".agents/skills" },
     { name: "kiro", path: ".kiro/skills" },
     { name: "letta", path: ".skills" },
     { name: "opencode", path: ".opencode/skill" },

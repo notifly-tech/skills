@@ -132,15 +132,23 @@ case "$mode" in
           }
           ;;
         amp)
-          [[ "$skill_dir" == *"/.amp/skills/"* || "$skill_dir" == ".amp/skills/"* ]] || {
-            echo "오류: Amp 스킬 경로에는 '.amp/skills/'가 포함되어야 합니다" >&2
+          # Amp는 워크스페이스에서는 `.agents/skills/`, 전역(global)에서는 `~/.config/agents/skills/`를 사용합니다.
+          # 여기서는 클라이언트 스킬 디렉터리 검증을 위해 `.agents/skills/` 세그먼트만 확인합니다.
+          [[ "$skill_dir" == *"/.agents/skills/"* || "$skill_dir" == ".agents/skills/"* ]] || {
+            echo "오류: Amp 스킬 경로에는 '.agents/skills/'가 포함되어야 합니다" >&2
             echo "   경로: $skill_dir" >&2
             exit 1
           }
           ;;
         goose)
-          [[ "$skill_dir" == *"/.goose/skills/"* || "$skill_dir" == ".goose/skills/"* ]] || {
-            echo "오류: Goose 스킬 경로에는 '.goose/skills/'가 포함되어야 합니다" >&2
+          # Goose는 goose 전용 경로와 포터블 경로를 모두 지원합니다.
+          [[
+            "$skill_dir" == *"/.goose/skills/"* ||
+            "$skill_dir" == ".goose/skills/"* ||
+            "$skill_dir" == *"/.agents/skills/"* ||
+            "$skill_dir" == ".agents/skills/"*
+          ]] || {
+            echo "오류: Goose 스킬 경로에는 '.goose/skills/' 또는 '.agents/skills/'가 포함되어야 합니다" >&2
             echo "   경로: $skill_dir" >&2
             exit 1
           }

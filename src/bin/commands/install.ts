@@ -72,7 +72,9 @@ export async function installSkill(skillName: string, options: InstallOptions) {
         relativeDest = ".amazonq/skills";
         break;
       case "amp":
-        relativeDest = ".amp/skills";
+        // Amp는 워크스페이스 스킬을 `.agents/skills/`, 전역 스킬을 `~/.config/agents/skills/`에서 찾습니다.
+        // CLI의 `--global` 플래그는 사용자 레벨(`~/.config/agents/skills`) 위치에 매핑됩니다.
+        relativeDest = options.global ? ".config/agents/skills" : ".agents/skills";
         break;
       case "claude":
       case "claude-code":
@@ -93,7 +95,11 @@ export async function installSkill(skillName: string, options: InstallOptions) {
         relativeDest = ".gemini/skills";
         break;
       case "goose":
-        relativeDest = ".goose/skills";
+        // Goose는 포터블 스킬 위치도 지원합니다.
+        // - 프로젝트: `./.agents/skills/`
+        // - 전역   : `~/.config/agents/skills/`
+        // 기본적으로 포터블 위치를 사용하지만, 사용자는 --path로 오버라이드할 수 있습니다.
+        relativeDest = options.global ? ".config/agents/skills" : ".agents/skills";
         break;
       case "kiro":
         relativeDest = ".kiro/skills";

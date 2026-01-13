@@ -1,7 +1,7 @@
 # Notifly Agent Skills
 
 [![npm version](https://img.shields.io/npm/v/notifly-agent-skills.svg?logo=npm&label=npm)](https://www.npmjs.com/package/notifly-agent-skills)
-[![npm downloads](https://img.shields.io/npm/dm/notifly-agent-skills.svg)](https://www.npmjs.com/package/notifly-agent-skills)
+[![npm downloads](https://img.shields.io/npm/d18m/notifly-agent-skills.svg)](https://www.npmjs.com/package/notifly-agent-skills)
 
 이 문서에서는 **노티플라이 에이전트 스킬** 패키지 모음을 소개합니다. 각 스킬은
 AI 클라이언트(예: Cursor, Claude Code, Codex, VS Code 등)에서 불러와서 실행할 수
@@ -79,13 +79,13 @@ npx notifly-agent-skills@latest install --all --client cursor --global
 
 | 클라이언트     | 플래그                                 | 기본 경로          |
 | :------------- | :------------------------------------- | :----------------- |
-| Amp            | `--client amp`                         | `.amp/skills/`     |
+| Amp            | `--client amp`                         | `.agents/skills/`  |
 | Claude Code    | `--client claude` (또는 `claude-code`) | `.claude/skills/`  |
 | Codex          | `--client codex`                       | `.codex/skills/`   |
 | Cursor         | `--client cursor`                      | `.cursor/skills/`  |
 | Gemini CLI     | `--client gemini`                      | `.gemini/skills/`  |
 | GitHub Copilot | `--client github`                      | `.github/skills/`  |
-| Goose          | `--client goose`                       | `.goose/skills/`   |
+| Goose          | `--client goose`                       | `.agents/skills/`  |
 | Letta          | `--client letta`                       | `.skills/`         |
 | OpenCode       | `--client opencode`                    | `.opencode/skill/` |
 
