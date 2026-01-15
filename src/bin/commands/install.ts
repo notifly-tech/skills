@@ -62,7 +62,7 @@ export async function installSkill(skillName: string, options: InstallOptions) {
   }
 
   // 2. Determine Destination
-  let relativeDest = ".notifly/skills";
+  let relativeDest = ".agent/skills";
 
   if (options.path) {
     relativeDest = options.path;
@@ -94,6 +94,12 @@ export async function installSkill(skillName: string, options: InstallOptions) {
       case "gemini":
         relativeDest = ".gemini/skills";
         break;
+      case "antigravity":
+        // Google Antigravity follows Gemini-style layouts:
+        // - Project scope: .agent/skills
+        // - Global scope : ~/.gemini/antigravity/skills
+        relativeDest = options.global ? ".gemini/antigravity/skills" : ".agent/skills";
+        break;
       case "goose":
         // Goose는 포터블 스킬 위치도 지원합니다.
         // - 프로젝트: `./.agents/skills/`
@@ -116,7 +122,7 @@ export async function installSkill(skillName: string, options: InstallOptions) {
       default:
         relativeDest = options.client.startsWith(".")
           ? `${options.client}/skills`
-          : `.notifly/skills`;
+          : `.agent/skills`;
     }
   }
 

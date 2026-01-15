@@ -44,6 +44,7 @@ CLI는 스킬에 대해 두 가지 설치 모드를 지원합니다.
 
 ```bash
 # 특정 스킬 설치 (repo root - 기본값)
+# --client를 생략하면 기본 경로: .agent/skills/<skill-name>
 npx notifly-agent-skills@latest install <skill-name> --client <your-client>
 # 예: Cursor에 integration 스킬을 설치
 npx notifly-agent-skills@latest install integration --client cursor
@@ -77,17 +78,19 @@ npx notifly-agent-skills@latest install --all --client cursor --global
 
 각 클라이언트별로 CLI에서 사용할 플래그와 기본 스킬 저장 경로는 다음과 같습니다.
 
-| 클라이언트     | 플래그                                 | 기본 경로          |
-| :------------- | :------------------------------------- | :----------------- |
-| Amp            | `--client amp`                         | `.agents/skills/`  |
-| Claude Code    | `--client claude` (또는 `claude-code`) | `.claude/skills/`  |
-| Codex          | `--client codex`                       | `.codex/skills/`   |
-| Cursor         | `--client cursor`                      | `.cursor/skills/`  |
-| Gemini CLI     | `--client gemini`                      | `.gemini/skills/`  |
-| GitHub Copilot | `--client github`                      | `.github/skills/`  |
-| Goose          | `--client goose`                       | `.agents/skills/`  |
-| Letta          | `--client letta`                       | `.skills/`         |
-| OpenCode       | `--client opencode`                    | `.opencode/skill/` |
+| 클라이언트              | 플래그                 | 기본 경로          |
+| :---------------------- | :--------------------- | :----------------- |
+| 기본값(--client 미지정) | _해당 없음_            | `.agent/skills/`   |
+| Amp                     | `--client amp`         | `.agents/skills/`  |
+| Claude Code             | `--client claude`      | `.claude/skills/`  |
+| Codex                   | `--client codex`       | `.codex/skills/`   |
+| Cursor                  | `--client cursor`      | `.cursor/skills/`  |
+| Gemini CLI              | `--client gemini`      | `.gemini/skills/`  |
+| Google Antigravity      | `--client antigravity` | `.agent/skills/`   |
+| GitHub Copilot          | `--client github`      | `.github/skills/`  |
+| Goose                   | `--client goose`       | `.agents/skills/`  |
+| Letta                   | `--client letta`       | `.skills/`         |
+| OpenCode                | `--client opencode`    | `.opencode/skill/` |
 
 **참고:** Letta의 기본 경로인 `.skills/`는 홈 디렉터리 기준 상대 경로입니다.
 

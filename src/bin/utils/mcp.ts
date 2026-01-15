@@ -232,6 +232,16 @@ function getClientConfig(client: string): ClientConfig | null {
         format: "json",
       };
 
+    case "antigravity":
+    case "google-antigravity":
+    case "google_antigravity":
+      // Google Antigravity stores MCP config alongside Gemini under an antigravity namespace.
+      return {
+        path: path.join(home, ".gemini", "antigravity", "settings.json"),
+        configKey: "mcpServers",
+        format: "json",
+      };
+
     case "vscode":
     case "github":
     case "copilot":
@@ -444,12 +454,13 @@ export async function configureMCP(client?: string): Promise<void> {
           { name: "Cursor", value: "cursor" },
           { name: "Gemini CLI", value: "gemini" },
           { name: "GitHub", value: "github" },
+          { name: "Google Antigravity", value: "antigravity" },
           { name: "Goose", value: "goose" },
           { name: "Kiro", value: "kiro" },
           { name: "Letta", value: "letta" },
+          { name: "None / Manual", value: "manual" },
           { name: "OpenCode", value: "opencode" },
           { name: "VS Code", value: "vscode" },
-          { name: "None / Manual", value: "manual" },
         ],
       },
     ]);
