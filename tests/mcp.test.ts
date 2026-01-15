@@ -143,6 +143,27 @@ describe("configureMCP", () => {
     });
   });
 
+  it("should configure Google Antigravity via ~/.gemini/antigravity/settings.json", async () => {
+    mockedInquirer.prompt.mockResolvedValueOnce({ inject: true });
+
+    await configureMCP("antigravity");
+
+    const globalPath = path.join(mockHome, ".gemini", "antigravity", "settings.json");
+    expect(mockedFs.readJSON).toHaveBeenCalledWith(globalPath);
+    expect(mockedFs.writeJSON).toHaveBeenCalledWith(
+      globalPath,
+      expect.objectContaining({
+        mcpServers: expect.objectContaining({
+          "notifly-mcp-server": expect.objectContaining({
+            command: "npx",
+            args: ["-y", "notifly-mcp-server@latest"],
+          }),
+        }),
+      }),
+      expect.anything()
+    );
+  });
+
   it("should configure Claude via `claude mcp add` (no config file edits)", async () => {
     mockedSpawnSync
       .mockReturnValueOnce({ status: 0, stdout: "help", stderr: "", error: undefined }) // mcp --help

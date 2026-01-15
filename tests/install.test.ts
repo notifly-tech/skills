@@ -64,10 +64,10 @@ describe("installSkill", () => {
     consoleWarnSpy.mockRestore();
   });
 
-  it("should install to default .notifly/skills when no client is specified", async () => {
+  it("should install to default .agent/skills when no client is specified", async () => {
     await installSkill("integration", {});
 
-    const expectedDest = path.resolve(process.cwd(), ".notifly/skills/integration");
+    const expectedDest = path.resolve(process.cwd(), ".agent/skills/integration");
     expect(mockedFs.copy).toHaveBeenCalledWith(
       expect.stringContaining("skills/integration"),
       expectedDest
@@ -117,6 +117,20 @@ describe("installSkill", () => {
     const expectedDest = path.resolve(mockHomeDir, ".gemini/skills/integration");
     expect(mockedFs.copy).toHaveBeenCalledWith(expect.any(String), expectedDest);
     expect(mockSpinner.succeed).toHaveBeenCalledWith(expect.stringContaining("system root"));
+  });
+
+  it("should install to .agent/skills when client is antigravity (project scope)", async () => {
+    await installSkill("integration", { client: "antigravity" });
+
+    const expectedDest = path.resolve(process.cwd(), ".agent/skills/integration");
+    expect(mockedFs.copy).toHaveBeenCalledWith(expect.any(String), expectedDest);
+  });
+
+  it("should install to ~/.gemini/antigravity/skills when client is antigravity with --global", async () => {
+    await installSkill("integration", { client: "antigravity", global: true });
+
+    const expectedDest = path.resolve(mockHomeDir, ".gemini/antigravity/skills/integration");
+    expect(mockedFs.copy).toHaveBeenCalledWith(expect.any(String), expectedDest);
   });
 
   it("should install to .opencode/skill when client is opencode", async () => {
@@ -249,10 +263,10 @@ describe("installSkill", () => {
     expect(mockedFs.copy).toHaveBeenCalledWith(expect.any(String), expectedDest);
   });
 
-  it("should fallback to .notifly/skills for unknown client", async () => {
+  it("should fallback to .agent/skills for unknown client", async () => {
     await installSkill("integration", { client: "unknown-client" });
 
-    const expectedDest = path.resolve(process.cwd(), ".notifly/skills/integration");
+    const expectedDest = path.resolve(process.cwd(), ".agent/skills/integration");
     expect(mockedFs.copy).toHaveBeenCalledWith(expect.any(String), expectedDest);
   });
 
@@ -342,7 +356,7 @@ describe("installSkill", () => {
     it("should install to project root for default client when global is false", async () => {
       await installSkill("integration", { global: false });
 
-      const expectedDest = path.resolve(process.cwd(), ".notifly/skills/integration");
+      const expectedDest = path.resolve(process.cwd(), ".agent/skills/integration");
       expect(mockedFs.copy).toHaveBeenCalledWith(
         expect.stringContaining("skills/integration"),
         expectedDest
