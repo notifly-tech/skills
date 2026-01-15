@@ -14,18 +14,14 @@
       "description": "Integrates Notifly SDK into iOS/Android/Flutter/React Native projects. Use when the user asks to install/setup/integrate Notifly, or when the user types \"notifly-integration\".",
       "source": "./",
       "strict": false,
-      "skills": [
-        "./skills/integration"
-      ]
+      "skills": ["./skills/integration"]
     },
     {
       "name": "notifly-skill-creator",
       "description": "Creates new Notifly agent skills by researching Notifly SDK + docs via Notifly MCP Server, then generating a complete skill folder (SKILL.md, references, scripts, examples) aligned with this repo's conventions. Only use when the user asks to create a new Notifly skill, or when the user types \"notifly-skill-creator\".",
       "source": "./",
       "strict": false,
-      "skills": [
-        "./skills/skill-creator"
-      ]
+      "skills": ["./skills/skill-creator"]
     }
   ]
 }
