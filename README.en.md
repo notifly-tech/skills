@@ -1,138 +1,55 @@
-# Agent Skills for Notifly
+# Notifly Agent Skills
 
-[![npm version](https://img.shields.io/npm/v/notifly-agent-skills.svg?logo=npm&label=npm)](https://www.npmjs.com/package/notifly-agent-skills)
-[![npm downloads](https://img.shields.io/npm/dm/notifly-agent-skills.svg)](https://www.npmjs.com/package/notifly-agent-skills)
+A collection of skills for AI coding agents. Skills are packaged instructions and scripts that extend agent capabilities.
 
-This repository contains a collection of **Agent Skills for Notifly**. Each
-skill is a self-contained package that can be loaded and executed by AI clients.
+Skills follow the [Agent Skills](https://agentskills.io/) format.
 
-## Installing Skills
+## Available Skills
 
-Agent skills in this repository are built on the
-[open agent skills standard](https://agentskills.io/home). Please refer to the
-[official documentation](https://agentskills.io/home#adoption) for up-to-date
-information on supported AI clients. Depending on the AI client you are using,
-you can install skills in different ways.
+### notifly-integration
 
-### Universal CLI (Recommended)
+Integrate Notifly Mobile SDK into iOS, Android, Flutter, and React Native projects, and configure the Notifly MCP Server.
 
-For Amp, Claude Code, Codex, Copilot, Cursor, Gemini, Goose, Letta, OpenCode,
-and VS Code, we recommend using our installer to set up the skills and
-automatically configure the Notifly MCP Server.
+**Use when:**
+- Integrating Notifly SDK into a new project
+- Adding Notifly push notifications to an existing project
+- Setting up SDK for iOS, Android, Flutter, or React Native
 
-#### Installation Modes
 
-The CLI supports two installation modes for skills:
-
-1. **Repo Root (Project-specific)** - Installs skills to the current project
-   directory (default)
-   - Skills are available only for the current project
-   - Best for project-specific configurations
-
-2. **System Root (Global)** - Installs skills to your home directory
-   - Skills are available across all projects
-   - Best for personal development setup
-
-**Note:** MCP (Model Context Protocol) server configuration is always set up
-globally (system root), regardless of the skill installation mode. This ensures
-the MCP server is available across all your projects.
+## Installation
 
 ```bash
-# Install a specific skill (repo root - default)
-npx notifly-agent-skills@latest install <skill-name> --client <your-client>
-# For example, to install a skill on Cursor:
-npx notifly-agent-skills@latest install integration --client cursor
-
-# Install a specific skill globally (system root)
-npx notifly-agent-skills@latest install <skill-name> --client <your-client> --global
-# For example:
-npx notifly-agent-skills@latest install integration --client cursor --global
-
-# Install all available skills at once (repo root)
-npx notifly-agent-skills@latest install --all --client cursor
-# Currently, this installs: integration, skill-creator
-
-# Install all available skills globally (system root)
-npx notifly-agent-skills@latest install --all --client cursor --global
+npx skills add notifly-tech/skills
 ```
 
-### Available Skills
+## Usage
 
-- **notifly-integration**: Integrate Notifly Mobile SDK into iOS, Android,
-  Flutter, and React Native projects, and configure the Notifly MCP Server.
-- **notifly-skill-creator**: Meta-skill for authors to generate new Notifly
-  agent skills (SKILL.md + references + scripts + examples) with MCP-first
-  evidence and deterministic validators. Install via `install skill-creator`.
+Skills are automatically available once installed. The agent will use them when relevant tasks are detected.
 
-**Supported Clients:**
-
-| Client                  | Flag                   | Default Path       |
-| :---------------------- | :--------------------- | :----------------- |
-| Default (no `--client`) | _n/a_                  | `.agent/skills/`   |
-| Amp                     | `--client amp`         | `.agents/skills/`  |
-| Claude Code             | `--client claude`      | `.claude/skills/`  |
-| Codex                   | `--client codex`       | `.codex/skills/`   |
-| Cursor                  | `--client cursor`      | `.cursor/skills/`  |
-| Gemini CLI              | `--client gemini`      | `.gemini/skills/`  |
-| Google Antigravity      | `--client antigravity` | `.agent/skills/`   |
-| GitHub Copilot          | `--client github`      | `.github/skills/`  |
-| Goose                   | `--client goose`       | `.agents/skills/`  |
-| Letta                   | `--client letta`       | `.skills/`         |
-| OpenCode                | `--client opencode`    | `.opencode/skill/` |
-| VS Code                 | `--client vscode`      | `.vscode/skills/`  |
-
-### Claude Code
-
-To register this repository as a plugin marketplace in Claude Code, run the
-following command:
-
-```bash
-/plugin marketplace add notifly-tech/skills
+**Examples:**
+```
+Integrate Notifly SDK into my React Native project
+```
+```
+Set up Notifly push notifications
+```
+```
+Verify my Notifly SDK integration
 ```
 
-To install specific skills:
+## Skill Structure
 
-1. Visit the Marketplace section in `/plugin`
-2. Select `Browse plugins`
-3. Choose the skills you wish to install
-4. Install skill
-
-Alternatively, you can install a single skill directly by running:
-
-```bash
-/plugin install <plugin-name>@<marketplace-name>
-# For example
-/plugin install notifly-integration@notifly-agent-skills
-```
-
-Remember to restart Claude Code after installation to load the new skills.
-
-### Codex
-
-To manually install skills, save them from this repository into your Codex
-configuration directory:
-[https://developers.openai.com/codex/skills/#where-to-save-skills](https://developers.openai.com/codex/skills/#where-to-save-skills)
-
-Or install a specific skill using the command line:
-
-```bash
-$skill-installer install <link-to-skill-folder>
-# For example
-$skill-installer install https://github.com/notifly-tech/skills/tree/main/skills/integration
-```
-
-Ensure you restart Codex after installation to detect the new skills.
+Each skill contains:
+- `SKILL.md` - Instructions for the agent
+- `scripts/` - Helper scripts for automation (optional)
+- `references/` - Supporting documentation (optional)
 
 ## Disclaimer
 
-Please be aware that these skills may occasionally fail or execute incorrectly
-due to the non-deterministic nature of AI. It is critical that you carefully
-review and verify all actions performed by these skills. While they are designed
-to be helpful, you remain responsible for checking their output before use.
-Please use them with caution and supervision.
+Please be aware that these skills may occasionally fail or execute incorrectly due to the non-deterministic nature of AI. It is critical that you carefully review and verify all actions performed by these skills.
+
+While they are designed to boost development productivity, you remain responsible for checking their output. In production environments, always review generated code and configurations before executing — especially for sensitive operations like billing, data deletion, or mass notification delivery.
 
 ## License
 
-Each skill in this repository is governed by its own license. For specific terms
-and conditions, please consult the `LICENSE.txt` file located within each
-skill's individual directory.
+Each skill in this repository is governed by its own license. Please consult the `LICENSE.txt` file within each skill's directory for specific terms.
