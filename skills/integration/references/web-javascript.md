@@ -156,6 +156,7 @@ Legacy SDK 2.4 이하를 명시적으로 지원해야 할 때만 `pushSubscripti
 - React StrictMode에서 effect가 두 번 실행될 수 있으므로 앱 레벨에서 한 번만 초기화되게 합니다.
 - Next.js App Router에서는 client component 또는 client-only provider 안에서 초기화합니다.
 - 기존 `Provider`/config parser/SDK client/test 구조가 있으면 가능하면 유지하고, 필요한 호출만 추가합니다. 다만 기존 앱의 명시적 계약을 깨지 않는 한 이 항목은 blocker가 아니라 parity/maintainability 신호입니다.
+- 데모 재적용 검토에서 root-level init/route coverage, permission CTA analytics, exact SDK pinning, validator의 behavioral contract coverage도 기본적으로 non-blocking parity signal로 보고합니다. 사용자가 hard requirement로 지정했거나 기존 계약을 실제로 깨는 경우에만 blocker로 올립니다.
 
 예시:
 

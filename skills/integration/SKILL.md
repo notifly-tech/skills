@@ -351,6 +351,16 @@ credentials.
 보존한 채 필요한 SDK 호출과 검증만 추가하는 편이 좋습니다. 다만 이 항목들은 기존 앱의
 명시적 계약을 깨지 않는 한 hard blocker가 아니라 quality/parity 신호로 보고합니다.
 
+웹 데모/재적용 검토에서 다음은 기본적으로 **non-blocking parity signal**입니다. 사용자가
+명시적으로 hard requirement로 지정했거나 기존 앱의 계약을 실제로 깨는 경우에만 blocker로
+올립니다:
+
+- 기존 provider/config/client/test 구조 보존
+- root-level SDK init과 route coverage
+- permission CTA analytics event 보존
+- demo fixture의 exact SDK version pinning 보존
+- validator가 marker pass를 넘어 behavioral contract 차이를 잡는 능력
+
 #### iOS 초기화 체크리스트
 
 - **엔트리포인트**: `AppDelegate.swift` (또는 SwiftUI에서
