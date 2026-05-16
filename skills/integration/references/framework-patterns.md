@@ -59,28 +59,32 @@
 - SDK 2.5.0+에서는 코드에 `projectId`, `username`, `password`만 두고, 웹푸시 세부
   옵션은 Notifly 콘솔 웹사이트 SDK 설정을 기준으로 합니다.
 - 웹 팝업은 `trackEvent`와 유저/프로퍼티 동기화가 핵심입니다.
-- 웹 푸시는 Service Worker path/scope, HTTPS, Notification 권한, PushSubscription이
-  핵심입니다.
+- 웹 푸시는 Service Worker path/scope, HTTPS secure context, Notification 권한,
+  PushSubscription이 핵심입니다. 로컬 검증도 `https://localhost`에서 수행합니다.
+- Next.js 로컬 HTTPS: `npm run dev -- --experimental-https` 또는
+  `npx next dev --experimental-https`. Next.js가 아니면 `package.json`으로 프레임워크를
+  식별한 뒤 해당 프레임워크의 공식 local HTTPS dev-server 방법을 확인해 실행합니다.
 
 React/Next.js 핵심 패턴:
 
 ```js
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import notifly from "notifly-js-sdk";
 
-export function useNotifly() {
-  const initialized = useRef(false);
+let notiflyInitialized = false;
 
+export function useNotifly() {
   useEffect(() => {
-    if (initialized.current) return;
+    if (notiflyInitialized) return;
     if (typeof window === "undefined") return;
 
-    initialized.current = true;
     notifly.initialize({
       projectId: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_ID,
       username: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_USERNAME,
       password: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD,
     });
+
+    notiflyInitialized = true;
   }, []);
 }
 ```

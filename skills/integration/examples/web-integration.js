@@ -8,6 +8,8 @@
  * - Web push options such as VAPID, serviceWorkerPath, askPermission, and prompt
  *   delay come from Notifly Console website SDK settings.
  * - For Web Push, serve a Service Worker file that imports NotiflyServiceWorker.js.
+ * - Web Push requires HTTPS/secure context. Local push tests should run at
+ *   https://localhost (Next.js: `npm run dev -- --experimental-https`).
  * - Credentials should be injected via env/secrets; do not hardcode real values.
  */
 

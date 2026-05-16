@@ -43,7 +43,8 @@ await notifly.trackEvent("view_product", { product_id: product.id }, ["product_i
 
 필수 계약:
 
-- HTTPS 또는 localhost 테스트 환경
+- HTTPS secure context. 운영은 HTTPS가 필수이고, 로컬 웹푸시 테스트도
+  `https://localhost`에서 수행합니다. plain HTTP/localhost 예외에 기대어 검증하지 마세요.
 - Notifly 콘솔의 웹사이트 SDK 설정에서 VAPID 키 생성
 - Notifly 콘솔의 `serviceWorkerPath`와 실제 제공 경로 일치
 - 해당 URL이 HTML fallback이 아니라 JavaScript Service Worker 파일로 200 응답
@@ -57,6 +58,40 @@ self.importScripts(
   "https://cdn.jsdelivr.net/npm/notifly-js-sdk@2/dist/NotiflyServiceWorker.js"
 );
 ```
+
+## 로컬 HTTPS 웹푸시 테스트
+
+웹푸시는 단순 SDK 호출이 아니라 브라우저의 secure-context 기능입니다. 따라서 로컬에서
+테스트할 때도 `http://localhost`가 아니라 `https://localhost`로 서버를 띄우고 다음 축을
+함께 확인합니다: Service Worker 등록, Notification 권한, PushSubscription 생성, Notifly
+기기 속성 로깅.
+
+Next.js라면 공식 `next dev` HTTPS 플래그를 사용합니다.
+
+```bash
+# package.json의 dev script가 `next dev`라면
+npm run dev -- --experimental-https
+
+# 또는 직접 실행
+npx next dev --experimental-https
+```
+
+정해진 인증서를 써야 하면 mkcert 등으로 만든 key/cert를 지정합니다.
+
+```bash
+npx next dev --experimental-https \
+  --experimental-https-key ./certificates/localhost-key.pem \
+  --experimental-https-cert ./certificates/localhost.pem
+```
+
+Next.js가 아니면 먼저 프로젝트의 프레임워크를 확인합니다.
+
+1. `package.json`의 dependencies/devDependencies/scripts를 읽어 Next/Vite/CRA/Remix/Astro/SvelteKit 등인지 식별
+2. 해당 프레임워크의 공식 local HTTPS dev-server 방법을 확인
+3. HTTPS 서버로 실행한 뒤 `https://localhost:<port>`에서 Service Worker path와 권한 흐름 검증
+
+예: Vite는 `@vitejs/plugin-basic-ssl` 또는 `server.https` 설정, CRA는 `HTTPS=true npm start`처럼
+프레임워크별 방법이 다릅니다. 추측하지 말고 현재 프로젝트의 프레임워크와 버전에 맞춰 확인하세요.
 
 ### 웹 팝업 + 웹 푸시
 
@@ -109,22 +144,23 @@ Legacy SDK 2.4 이하를 명시적으로 지원해야 할 때만 `pushSubscripti
 예시:
 
 ```js
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import notifly from "notifly-js-sdk";
 
-export function useNotifly() {
-  const initialized = useRef(false);
+let notiflyInitialized = false;
 
+export function useNotifly() {
   useEffect(() => {
-    if (initialized.current) return;
+    if (notiflyInitialized) return;
     if (typeof window === "undefined") return;
 
-    initialized.current = true;
     notifly.initialize({
       projectId: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_ID,
       username: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_USERNAME,
       password: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD,
     });
+
+    notiflyInitialized = true;
   }, []);
 }
 ```
@@ -183,6 +219,7 @@ notifly.requestPermission("en");
 
 ## 런타임 검증 체크리스트
 
+- [ ] Web Push 테스트 페이지를 `https://localhost:<port>` 또는 배포 HTTPS 도메인에서 열었다. plain HTTP가 아니다.
 - [ ] `https://<domain>/notifly-service-worker.js` 또는 콘솔에 설정한 SW path가 200 JS로 응답한다. SPA `index.html`이 아니다.
 - [ ] DevTools > Application > Service Workers에서 Notifly SW가 등록되어 있다.
 - [ ] Network에서 `/sdk-configurations?project_id=...&type=website`가 200이다.

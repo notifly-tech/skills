@@ -87,7 +87,8 @@ MCP 도구가 없다면 먼저 `notifly-mcp-server`를 구성하세요:
   - **Android 인앱 팝업은 Android 11 (API 30)+ 필요**
 - **Web (웹 푸시 사용 시)**:
   - **VAPID 키 생성**: 콘솔 **설정 → SDK 설정 → 웹사이트 설정**
-  - **HTTPS 환경 권장/필수**: 브라우저 권한 정책 및 Service Worker 요구사항
+  - **HTTPS 필수**: Web Push/Service Worker/PushSubscription은 secure context에서만
+    동작합니다. 로컬 웹푸시 검증도 `https://localhost`로 서버를 띄워 테스트하세요.
   - **Service Worker 파일 제공**: 번들러 사용 시 SW 파일이 누락되지 않도록
     public/static assets 복사 설정
 
@@ -248,7 +249,9 @@ credentials.
 **필수 선행(웹 푸시 사용 시, 공식)**:
 
 - 콘솔에서 VAPID 키 생성: 설정 → SDK 설정 → 웹사이트 설정
-- HTTPS 환경에서 서비스(브라우저 정책; 로컬 개발은 브라우저별 localhost 예외 가능)
+- HTTPS secure context에서 서비스. Web Push는 plain HTTP에서 검증하지 않습니다.
+  로컬 테스트도 `https://localhost`로 서버를 띄워 Service Worker/권한/구독 흐름을
+  확인하세요.
 - Service Worker 파일 제공: 기본 권장 경로는 `/notifly-service-worker.js`입니다.
   단, 공식 문서상 파일명/경로는 변경 가능하며 Notifly 콘솔의
   `serviceWorkerPath` 설정과 실제 제공 경로가 반드시 일치해야 합니다.
@@ -285,6 +288,13 @@ credentials.
 
 **4) 권한 요청(웹 푸시 사용 시)**:
 
+- 먼저 HTTPS 로컬 서버 또는 배포 HTTPS 도메인에서 페이지를 엽니다. plain HTTP에서
+  권한/Service Worker/PushSubscription 흐름을 검증하지 않습니다.
+- Next.js 로컬 테스트는 `npm run dev -- --experimental-https` 또는
+  `npx next dev --experimental-https`로 실행하고 `https://localhost:3000`에서 확인합니다.
+  필요하면 `--experimental-https-key`, `--experimental-https-cert`로 mkcert 인증서를 지정합니다.
+- Next.js가 아니면 대상 프로젝트의 `package.json`/lockfile/scripts로 현재 웹 프레임워크를
+  먼저 식별한 뒤, 해당 프레임워크의 공식 local HTTPS dev-server 방법을 찾아 실행합니다.
 - 콘솔에서 자동 권한 팝업을 켜면 방문 시 안내 → 브라우저 권한 요청 순서로 동작
 - 특정 타이밍에만 요청하려면 SDK 2.7.0+에서 콘솔 자동 노출을 끄고
   `notifly.requestPermission(...)` 호출
@@ -369,6 +379,10 @@ Service Worker 후보, `NotiflyServiceWorker.js` import, legacy 옵션, user/eve
 
 4. Web 런타임 검증(웹 푸시/웹 팝업):
 
+- 웹 푸시는 HTTPS secure context에서만 검증합니다. 로컬도 `https://localhost`로 실행합니다.
+  - Next.js: `npm run dev -- --experimental-https` 또는 `npx next dev --experimental-https`
+  - Next.js가 아니면 `package.json`으로 프레임워크를 식별하고, 해당 프레임워크의 공식
+    local HTTPS 실행법을 찾아 서버를 띄운 뒤 테스트합니다.
 - 콘솔에 설정한 Service Worker path가 실제로 200 JS 응답인지 확인
   (`/notifly-service-worker.js`가 기본 예시이며, HTML fallback이면 실패)
 - DevTools → Application → Service Workers에서 등록/scope 확인

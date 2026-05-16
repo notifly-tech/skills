@@ -118,6 +118,12 @@ else
   if [[ ${#FOUND_SW[@]} -gt 1 ]]; then
     warn "Multiple Service Worker candidates found; verify scope/handler conflicts before enabling web push"
   fi
+  warn "Web push runtime testing must use HTTPS/secure context. Do not validate push permission/subscription on plain HTTP."
+  if file_exists package.json && grep -q '"next"' package.json 2>/dev/null; then
+    warn "Next.js local HTTPS: run 'npm run dev -- --experimental-https' or 'npx next dev --experimental-https', then test https://localhost:<port>"
+  else
+    warn "Non-Next.js project: identify the web framework from package.json and use its official local HTTPS dev-server command before testing web push"
+  fi
 fi
 
 if contains 'notifly\.requestPermission\s*\(' "${SOURCE_FILES[@]}"; then
