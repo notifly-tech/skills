@@ -43,7 +43,11 @@ contains() {
 
 collect_files() {
   if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    git ls-files '*.js' '*.jsx' '*.ts' '*.tsx' '*.html' '*.vue' '*.svelte' '*.mjs' '*.cjs' 2>/dev/null || true
+    # Include both tracked and untracked-but-not-ignored files so the validator
+    # works immediately after adding integration files, before staging/commit.
+    git ls-files --cached --others --exclude-standard -- \
+      '*.js' '*.jsx' '*.ts' '*.tsx' '*.html' '*.vue' '*.svelte' '*.mjs' '*.cjs' \
+      2>/dev/null || true
   else
     find . \
       -path './node_modules' -prune -o \

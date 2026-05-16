@@ -11,17 +11,17 @@
  * - Credentials should be injected via env/secrets; do not hardcode real values.
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import notifly from "notifly-js-sdk";
 
+// Keep the guard at module/app-provider scope, not per hook instance.
+// React StrictMode remounts and multiple hook consumers should not initialize twice.
+let notiflyInitialized = false;
+
 export function useNotiflyWeb() {
-  const initialized = useRef(false);
-
   useEffect(() => {
-    if (initialized.current) return;
+    if (notiflyInitialized) return;
     if (typeof window === "undefined") return;
-
-    initialized.current = true;
 
     notifly.initialize({
       projectId: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_ID,
@@ -30,6 +30,8 @@ export function useNotiflyWeb() {
       // Only enable when a web-popup HTML template needs to emit custom events.
       // allowUserSuppliedLogEvent: true,
     });
+
+    notiflyInitialized = true;
   }, []);
 }
 
