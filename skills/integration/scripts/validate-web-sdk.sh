@@ -75,10 +75,16 @@ else
   fail "notifly.initialize(...) call not found"
 fi
 
-if contains 'projectId\s*:' "${SOURCE_FILES[@]}" && contains 'username\s*:' "${SOURCE_FILES[@]}" && contains 'password\s*:' "${SOURCE_FILES[@]}"; then
-  ok "initialize credentials markers found: projectId, username, password"
+if contains 'projectId[[:space:]]*:' "${SOURCE_FILES[@]}" && contains 'username[[:space:]]*:' "${SOURCE_FILES[@]}" && contains 'password[[:space:]]*:' "${SOURCE_FILES[@]}"; then
+  ok "initialize credential markers found: projectId, username, password"
 else
   fail "initialize credential markers missing: projectId, username, password"
+fi
+
+if contains 'projectId.*(32|invalid|Invalid|validate)|validate.*projectId|length[[:space:]]*[!=]={0,2}[[:space:]]*32|\^\[a-f0-9\]|\[a-fA-F0-9\]\{32\}' "${SOURCE_FILES[@]}"; then
+  ok "projectId validation marker found"
+else
+  warn "projectId validation marker not found; preserve/add project-specific validation and separate missing vs invalid config"
 fi
 
 if contains 'pushSubscriptionOptions\s*:' "${SOURCE_FILES[@]}"; then
@@ -87,6 +93,12 @@ fi
 
 if contains 'serviceWorkerPath\s*:' "${SOURCE_FILES[@]}"; then
   warn "serviceWorkerPath marker found in app code; for SDK 2.5+ verify this is legacy-only or console-configured"
+fi
+
+if contains 'allowUserSuppliedLogEvent[[:space:]]*:' "${SOURCE_FILES[@]}"; then
+  ok "allowUserSuppliedLogEvent option marker found"
+else
+  warn "allowUserSuppliedLogEvent marker not found; OK unless web-popup HTML custom event logging is in scope"
 fi
 
 SW_CANDIDATES=(
@@ -126,11 +138,18 @@ else
   fi
 fi
 
-if contains 'notifly\.requestPermission\s*\(' "${SOURCE_FILES[@]}"; then
+if contains 'notifly\.requestPermission[[:space:]]*\(' "${SOURCE_FILES[@]}"; then
   ok "manual notifly.requestPermission(...) call found"
   warn "manual permission prompt requires SDK 2.7.0+ and console auto prompt disabled"
+  warn "requestPermission(...) only attempts the prompt; verify Notification.permission, PushSubscription, and device logging separately"
 else
   warn "manual notifly.requestPermission(...) not found; OK if console auto prompt is enabled or web push is not used"
+fi
+
+if contains 'Notification\.permission|getSubscription[[:space:]]*\(|PushSubscription|push.*verified|push.*subscribed|subscribed|subscription' "${SOURCE_FILES[@]}"; then
+  ok "push permission/subscription state marker found"
+else
+  warn "No explicit push subscription verification marker found; do not treat SDK ready as proof of web push subscription"
 fi
 
 if contains 'notifly\.setUserId\s*\(' "${SOURCE_FILES[@]}"; then

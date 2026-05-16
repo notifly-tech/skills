@@ -12,7 +12,7 @@
 
 ## 자격 증명(SDK)
 
-Notifly SDK는 다음 자격 증명을 사용합니다:
+Notifly SDK는 플랫폼 무관하게 같은 credential triple을 사용합니다:
 
 - `NOTIFLY_PROJECT_ID`
 - `NOTIFLY_USERNAME`
@@ -20,6 +20,10 @@ Notifly SDK는 다음 자격 증명을 사용합니다:
 
 발급 위치: **Notifly 콘솔** (`https://console.notifly.tech/`) → Project Settings
 → SDK credentials.
+
+Web도 같은 초기화 계약을 따릅니다. 다만 브라우저 번들은 공개될 수 있으므로, 실제
+주입/노출 방식은 대상 프로젝트의 public config/server-injected config/빌드타임 config
+정책을 따르고 `.env.example` 내용은 필수 판정 기준으로 삼지 않습니다.
 
 ## 설치 아티팩트(정식)
 
@@ -46,7 +50,8 @@ Notifly SDK는 다음 자격 증명을 사용합니다:
   호출하세요.
 - **JavaScript/Web SDK 2.5.0+**:
   `notifly.initialize({ projectId, username, password })`.
-  웹푸시 세부값(VAPID/SW path/권한 팝업/지연시간)은 콘솔 웹사이트 SDK 설정값을
+  `projectId`가 외부 config에서 오면 프로젝트 규칙에 맞게 검증하고 missing/invalid를
+  구분합니다. 웹푸시 세부값(VAPID/SW path/권한 팝업/지연시간)은 콘솔 웹사이트 SDK 설정값을
   사용합니다.
 
 ## Android: 핵심 API(초기화 이후)
@@ -71,6 +76,8 @@ Notifly SDK는 다음 자격 증명을 사용합니다:
 - **Web Push Permission**:
   - `notifly.requestPermission()` 또는 `notifly.requestPermission("en")`
   - SDK 2.7.0+ 및 콘솔 자동 권한 팝업 OFF 조건에서 수동 호출
+  - 호출 성공은 prompt 시도일 뿐이며, `Notification.permission`, PushSubscription,
+    device logging을 따로 확인해야 합니다.
 
 ## MCP-first 규칙
 

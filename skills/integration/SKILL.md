@@ -103,7 +103,7 @@ MCP 도구가 없다면 먼저 `notifly-mcp-server`를 구성하세요:
 
 ### 2단계: 자격 증명(SDK)
 
-Notifly SDK 자격 증명(Mobile/Web 공통):
+Notifly SDK 자격 증명은 플랫폼 무관하게 같은 triple을 사용합니다:
 
 - `NOTIFLY_PROJECT_ID`
 - `NOTIFLY_USERNAME`
@@ -114,8 +114,16 @@ credentials.
 
 **권장 사항**:
 
+- iOS/Android/Flutter/RN/Web 모두 공식 초기화 계약은 `projectId`, `username`,
+  `password`입니다. Web만 별도 password 정책을 만든다고 가정하거나 `password` 필드를
+  임의로 제거하지 마세요.
 - 자격 증명을 소스에 하드코딩/커밋하지 마세요.
-- 플랫폼에 맞는 런타임/빌드타임 시크릿 주입 방식을 사용하세요.
+- 플랫폼에 맞는 런타임/빌드타임 주입 방식을 사용하세요. Web은 번들 공개성을 고려해
+  프로젝트가 정한 public config/server-injected config/빌드타임 config 정책을 따릅니다.
+- `.env.example`의 존재/내용은 프로젝트마다 다를 수 있으므로 연동 품질의 필수 판정
+  기준으로 삼지 않습니다.
+- `projectId`가 외부 설정값이면 프로젝트 규칙(예: 32자 hex)에 맞게 검증하고,
+  missing/invalid를 구분해 보고하세요. 기존 validation/test가 있으면 보존합니다.
 
 ### 3단계: 플랫폼 식별(프로젝트 타입)
 
@@ -275,14 +283,20 @@ credentials.
 
 **3) SDK 초기화(현재 SDK 2.5.0+ 공식 패턴)**:
 
-- 코드에는 보통 `projectId`, `username`, `password`만 지정합니다.
+- 코드에는 보통 `projectId`, `username`, `password`만 지정합니다. 이 credential
+  triple은 다른 Notifly SDK와 동일한 계약입니다. Web 전용으로 `password`를 제거하거나
+  임의 placeholder 정책을 만들지 말고, 대상 프로젝트의 주입/노출 정책을 확인합니다.
+- `projectId`가 env/config/콘솔 입력처럼 외부에서 들어오면 형식 검증(프로젝트 규칙,
+  예: 32자 hex)과 missing/invalid 오류 분리를 유지합니다. 기존 config parser와 테스트가
+  있으면 삭제하지 말고 확장합니다.
 - SDK 2.5.0+에서는 세션/웹푸시 세부 옵션(VAPID/SW 경로/권한 팝업/지연시간 등)이
   콘솔 웹사이트 SDK 설정값으로 대체됩니다.
 - SDK 2.5.0+ 신규 연동에서 `pushSubscriptionOptions`나 top-level
   `serviceWorkerPath`를 임의로 추가하지 않습니다. Legacy SDK 2.4 이하를 명시적으로
   지원할 때만 `pushSubscriptionOptions`를 사용합니다.
 - 웹 팝업 HTML 내부에서 사용자 정의 이벤트 로깅이 필요한 경우에만 SDK 2.17.2+에서
-  `allowUserSuppliedLogEvent: true`를 추가합니다.
+  `allowUserSuppliedLogEvent: true`를 추가합니다. 기존 프로젝트에 이 옵션/env/config
+  plumbing이나 테스트가 있으면 제거하지 말고 보존합니다.
 
 예시: `examples/web-integration.js`
 
@@ -298,6 +312,9 @@ credentials.
 - 콘솔에서 자동 권한 팝업을 켜면 방문 시 안내 → 브라우저 권한 요청 순서로 동작
 - 특정 타이밍에만 요청하려면 SDK 2.7.0+에서 콘솔 자동 노출을 끄고
   `notifly.requestPermission(...)` 호출
+- `requestPermission(...)` 호출은 “권한 프롬프트를 시도했다”는 뜻일 뿐입니다. `Notification.permission`,
+  Service Worker 등록, PushSubscription 생성, Notifly device property logging을 별도로 확인합니다.
+- SDK 초기화/ready 상태와 웹푸시 구독 verified/subscribed 상태를 분리해서 UI/문서/리포트에 표시합니다.
 - 브라우저 권한이 이미 `denied`이면 SDK가 다시 요청할 수 없으므로 브라우저/site
   설정에서 사용자가 직접 변경해야 합니다.
 
@@ -321,6 +338,8 @@ credentials.
 ### 5단계: SDK 초기화 위치 확정(레포 기준 증빙)
 
 이 단계는 “어디에 코드를 넣는지”와 “레포에서 증명 가능한지”를 점검합니다.
+기존 앱에 provider/config/client/test 구조가 있으면 새 단일 파일로 덮어쓰지 말고 그 구조를
+보존한 채 필요한 SDK 호출과 검증만 추가합니다.
 
 #### iOS 초기화 체크리스트
 
@@ -369,7 +388,8 @@ credentials.
 
 이 스크립트는 `notifly-js-sdk` 설치/CDN, `notifly.initialize(...)`, 자격 증명 마커,
 Service Worker 후보, `NotiflyServiceWorker.js` import, legacy 옵션, user/event API
-마커를 확인합니다. 정적 검증은 충분조건이 아니므로 아래 런타임 검증까지 수행하세요.
+마커를 확인합니다. 추가로 projectId 검증/`allowUserSuppliedLogEvent`/수동 권한 요청의
+런타임 의미를 경고로 표시합니다. 정적 검증은 충분조건이 아니므로 아래 런타임 검증까지 수행하세요.
 
 3. 빌드/실행 후 콘솔에서 확인:
 
@@ -388,7 +408,9 @@ Service Worker 후보, `NotiflyServiceWorker.js` import, legacy 옵션, user/eve
 - DevTools → Application → Service Workers에서 등록/scope 확인
 - Network에서 `/sdk-configurations?project_id=...&type=website` 200 확인
 - 브라우저에서 알림 권한 요청/허용 흐름이 의도대로 동작하는지 확인
+  (`requestPermission(...)` 호출 자체는 prompt 시도일 뿐 성공/구독 증명이 아님)
 - 권한 허용 후 PushSubscription 생성 및 device property logging 확인
+- SDK 초기화/ready 상태와 웹푸시 verified/subscribed 상태를 분리해 확인
 - `setUserId → setUserProperties → trackEvent` 호출 후 콘솔에서 반영 확인
 - 웹 팝업 캠페인 조건에 맞는 이벤트 호출 시 modal 노출 확인
 
@@ -425,17 +447,23 @@ Service Worker 후보, `NotiflyServiceWorker.js` import, legacy 옵션, user/eve
 - `notifly-js-sdk` 설치(npm) 또는 CDN 로드 확인
 - 앱 코드에서 현재 SDK 2.5.0+ 패턴인
   `notifly.initialize({ projectId, username, password })` 호출 확인
+- SDK credential triple(`projectId`, `username`, `password`)은 플랫폼 공통 계약입니다.
+  Web 전용으로 password 정책을 바꾸지 않고, 프로젝트의 주입/노출 정책을 확인합니다.
+- 외부 config에서 받은 `projectId` 검증과 missing/invalid 오류 분리를 보존합니다.
+  기존 config parser/provider/tests가 있으면 삭제하지 말고 확장합니다.
 - 신규 SDK 2.5.0+ 연동에서 `pushSubscriptionOptions` 또는 top-level
   `serviceWorkerPath`를 추가하지 않았는지 확인(legacy SDK 2.4 이하 예외)
 - (웹 팝업) `setUserId → setUserProperties → trackEvent` 호출 순서와 이벤트/속성 설계가
   캠페인 조건과 일치
 - (웹 팝업) 웹 팝업 HTML 내부 custom event logging이 필요할 때만
-  `allowUserSuppliedLogEvent: true` 사용
+  `allowUserSuppliedLogEvent: true` 사용. 기존 plumbing/test가 있으면 보존
 - (웹 푸시) 콘솔의 Service Worker path와 실제 제공 경로가 일치
 - (웹 푸시) SW 파일이 `NotiflyServiceWorker.js`를 importScripts 하는지 확인
 - (웹 푸시) 기존 PWA/Firebase/OneSignal/Braze/Workbox Service Worker와 scope/handler
   충돌이 없는지 확인
 - (웹 푸시) 권한 요청 및 구독 흐름이 동작하는지 확인
+  (`requestPermission(...)` 호출, `Notification.permission`, PushSubscription, device logging을 분리)
+- (웹 푸시) SDK ready와 push subscribed/verified 상태를 같은 의미로 보고하지 않음
 
 ### 8단계: 문서화
 

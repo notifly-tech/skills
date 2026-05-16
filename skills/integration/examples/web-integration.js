@@ -4,7 +4,8 @@
  * Minimal browser-only pattern for React/Next.js/Vite/etc.
  *
  * Notes:
- * - SDK 2.5.0+ usually needs only projectId, username, password in code.
+ * - SDK 2.5.0+ usually needs projectId, username, password in code.
+ *   This credential triple is the same contract across Notifly platforms.
  * - Web push options such as VAPID, serviceWorkerPath, askPermission, and prompt
  *   delay come from Notifly Console website SDK settings.
  * - For Web Push, serve a Service Worker file that imports NotiflyServiceWorker.js.
@@ -25,10 +26,17 @@ export function useNotiflyWeb() {
     if (notiflyInitialized) return;
     if (typeof window === "undefined") return;
 
+    const projectId = process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_ID;
+    const username = process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_USERNAME;
+    const password = process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD;
+
+    if (!projectId) throw new Error("Missing Notifly projectId");
+    if (!/^[a-f0-9]{32}$/i.test(projectId)) throw new Error("Invalid Notifly projectId");
+
     notifly.initialize({
-      projectId: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_ID,
-      username: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_USERNAME,
-      password: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD,
+      projectId,
+      username,
+      password,
       // Only enable when a web-popup HTML template needs to emit custom events.
       // allowUserSuppliedLogEvent: true,
     });
@@ -62,5 +70,7 @@ export function trackNotiflyEvent(name, params, segmentationEventParamKeys) {
 
 export function requestNotiflyPushPermission(language) {
   // Manual prompt requires SDK 2.7.0+ and console auto prompt disabled.
+  // This only attempts the browser prompt; verify Notification.permission,
+  // PushSubscription, and Notifly device logging separately.
   return notifly.requestPermission(language);
 }

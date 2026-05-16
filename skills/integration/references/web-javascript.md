@@ -104,13 +104,24 @@ Next.js가 아니면 먼저 프로젝트의 프레임워크를 확인합니다.
 
 ## 현재 SDK 2.5+ 초기화 계약
 
-현재 SDK에서는 코드에서 보통 세 필드만 지정합니다.
+Notifly SDK credential triple은 플랫폼 무관하게 동일합니다: `projectId`, `username`,
+`password`. Web 전용으로 password 정책을 바꾸거나 `password` 필드를 제거한다고 가정하지
+마세요. 다만 브라우저 번들은 사용자에게 보일 수 있으므로, 실제 주입/노출 방식은 대상
+프로젝트의 public config/server-injected config/빌드타임 config 정책을 따릅니다. `.env.example`은
+프로젝트마다 다를 수 있으므로 연동 품질의 필수 판정 기준으로 삼지 않습니다.
 
 ```js
+const projectId = process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_ID;
+const username = process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_USERNAME;
+const password = process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD;
+
+if (!projectId) throw new Error("Missing Notifly projectId");
+if (!/^[a-f0-9]{32}$/i.test(projectId)) throw new Error("Invalid Notifly projectId");
+
 notifly.initialize({
-  projectId: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_ID,
-  username: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_USERNAME,
-  password: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD,
+  projectId,
+  username,
+  password,
 });
 ```
 
@@ -124,6 +135,9 @@ notifly.initialize({
   allowUserSuppliedLogEvent: true, // 웹 팝업 HTML 내부 custom event logging이 필요한 경우에만
 });
 ```
+
+기존 프로젝트에 projectId validation, missing/invalid 구분, `allowUserSuppliedLogEvent`
+plumbing/test가 있으면 삭제하지 말고 확장하세요.
 
 하지 말아야 할 것:
 
@@ -140,6 +154,7 @@ Legacy SDK 2.4 이하를 명시적으로 지원해야 할 때만 `pushSubscripti
 - 브라우저에서만 실행합니다. SSR 중 `window` 접근 금지.
 - React StrictMode에서 effect가 두 번 실행될 수 있으므로 앱 레벨에서 한 번만 초기화되게 합니다.
 - Next.js App Router에서는 client component 또는 client-only provider 안에서 초기화합니다.
+- 기존 `Provider`/config parser/SDK client/test 구조가 있으면 유지하고, 필요한 호출만 추가합니다.
 
 예시:
 
@@ -215,6 +230,10 @@ notifly.requestPermission("en");
 
 - SDK 2.7.0+ 필요
 - 콘솔의 “권한 팝업 자동 노출”이 비활성화되어 있어야 함
+- `requestPermission(...)` 호출은 권한 프롬프트 시도일 뿐입니다. 성공/구독 증명은
+  `Notification.permission`, Service Worker 등록, PushSubscription 생성, Notifly device
+  property logging으로 별도 확인합니다.
+- SDK initialized/ready 상태와 push subscribed/verified 상태를 UI/문서/리포트에서 분리합니다.
 - 브라우저 권한이 이미 `denied`이면 SDK가 다시 요청할 수 없음
 
 ## 런타임 검증 체크리스트
@@ -225,7 +244,9 @@ notifly.requestPermission("en");
 - [ ] Network에서 `/sdk-configurations?project_id=...&type=website`가 200이다.
 - [ ] 콘솔에 `[Notifly] Failed to initialize PushManager` 오류가 없다.
 - [ ] `Notification.permission`이 의도한 상태다: `default`, `granted`, `denied`.
+- [ ] 권한 요청 버튼/API 호출은 prompt 시도이고, `Notification.permission`/PushSubscription/device logging으로 실제 성공을 따로 확인했다.
 - [ ] 권한 허용 후 PushSubscription이 생성된다.
 - [ ] `set_device_properties` 또는 device token logging이 Notifly 쪽에 반영된다.
+- [ ] SDK ready와 push subscribed/verified 상태를 같은 의미로 표시하지 않는다.
 - [ ] `setUserId → setUserProperties → trackEvent` 호출 후 Notifly 콘솔/테스트 페이지에서 이벤트가 보인다.
 - [ ] 웹 팝업 캠페인 조건에 맞는 이벤트 호출 시 modal이 노출된다.
