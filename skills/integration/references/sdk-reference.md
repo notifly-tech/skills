@@ -12,7 +12,7 @@
 
 ## 자격 증명(SDK)
 
-Notifly 모바일 SDK는 다음 자격 증명을 사용합니다:
+Notifly SDK는 다음 자격 증명을 사용합니다:
 
 - `NOTIFLY_PROJECT_ID`
 - `NOTIFLY_USERNAME`
@@ -29,6 +29,9 @@ Notifly 모바일 SDK는 다음 자격 증명을 사용합니다:
   `implementation 'com.github.team-michael:notifly-android-sdk:<latest>'`
 - **React Native (npm)**: `notifly-sdk`
 - **Flutter (pub.dev)**: `notifly_flutter`
+- **JavaScript/Web (npm)**: `notifly-js-sdk`
+- **JavaScript/Web (CDN)**:
+  `https://cdn.jsdelivr.net/npm/notifly-js-sdk@<SDK_VERSION>/dist/index.global.min.js`
 
 ## 초기화(정식)
 
@@ -41,6 +44,10 @@ Notifly 모바일 SDK는 다음 자격 증명을 사용합니다:
   `await NotiflyPlugin.initialize(projectId: ..., username: ..., password: ...)`
 - **React Native**: 네이티브 설정을 먼저 완료한 뒤, `notifly-sdk`의 JS API를
   호출하세요.
+- **JavaScript/Web SDK 2.5.0+**:
+  `notifly.initialize({ projectId, username, password })`.
+  웹푸시 세부값(VAPID/SW path/권한 팝업/지연시간)은 콘솔 웹사이트 SDK 설정값을
+  사용합니다.
 
 ## Android: 핵심 API(초기화 이후)
 
@@ -51,6 +58,19 @@ Notifly 모바일 SDK는 다음 자격 증명을 사용합니다:
 - **Event**:
   - `Notifly.trackEvent(context, eventName, eventParams, segmentationEventParamKeys)`
   - `segmentationEventParamKeys`: **최대 1개 키**
+
+## JavaScript/Web: 핵심 API(초기화 이후)
+
+- **User**:
+  - `notifly.setUserId(userId)`
+  - `notifly.setUserId(null)` 또는 `notifly.setUserId()`로 로그아웃/등록 해제
+  - `notifly.setUserProperties({...})`
+- **Event**:
+  - `notifly.trackEvent(eventName, eventParams, segmentationEventParamKeys)`
+  - `segmentationEventParamKeys`: **최대 1개 키**
+- **Web Push Permission**:
+  - `notifly.requestPermission()` 또는 `notifly.requestPermission("en")`
+  - SDK 2.7.0+ 및 콘솔 자동 권한 팝업 OFF 조건에서 수동 호출
 
 ## MCP-first 규칙
 

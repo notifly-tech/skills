@@ -234,24 +234,34 @@ credentials.
 
 ### Web (JavaScript SDK)
 
-**지원 기능(공식)**:
+**먼저 범위를 분리합니다.** 웹 팝업과 웹 푸시는 같은 SDK를 쓰지만 실패 지점이
+다릅니다. 자세한 계약은 `references/web-javascript.md`를 함께 확인하세요.
 
-- 웹 푸시(웹 푸시 알림 수신)
-- 웹 팝업(인앱 유사 웹 팝업)
-- 유저 식별/유저 프로퍼티/이벤트 트래킹
+- **웹 팝업 only**: Service Worker/Notification 권한이 아니라
+  `initialize → user state sync → trackEvent → campaign condition match → renderer`
+  경로가 핵심입니다.
+- **웹 푸시 only**: HTTPS, Notifly 콘솔의 VAPID/웹사이트 SDK 설정,
+  Service Worker path/scope, 브라우저 권한, PushSubscription 생성이 핵심입니다.
+- **웹 팝업 + 웹 푸시**: 초기화는 하나지만, 검증은 user/event 축과
+  Service Worker/permission 축을 따로 수행합니다.
 
 **필수 선행(웹 푸시 사용 시, 공식)**:
 
 - 콘솔에서 VAPID 키 생성: 설정 → SDK 설정 → 웹사이트 설정
-- HTTPS 환경에서 서비스(브라우저 정책)
-- Service Worker 파일을 **루트 경로**에서 제공(예: `/notifly-service-worker.js`)
+- HTTPS 환경에서 서비스(브라우저 정책; 로컬 개발은 브라우저별 localhost 예외 가능)
+- Service Worker 파일 제공: 기본 권장 경로는 `/notifly-service-worker.js`입니다.
+  단, 공식 문서상 파일명/경로는 변경 가능하며 Notifly 콘솔의
+  `serviceWorkerPath` 설정과 실제 제공 경로가 반드시 일치해야 합니다.
+- 기존 PWA/Firebase/OneSignal/Braze/Workbox Service Worker가 있는지 먼저 확인하고,
+  root scope 충돌 가능성이 있으면 무작정 새 SW를 추가하지 않습니다.
 
-**1) Service Worker 등록(공식 패턴)**:
+**1) Service Worker 등록(웹 푸시 사용 시)**:
 
-- 루트(public) 경로에 `notifly-service-worker.js` 생성
+- public/static 경로에 Service Worker 파일을 생성하거나 기존 SW에 통합
 - 내용(공식 패턴):
   - `self.importScripts("https://cdn.jsdelivr.net/npm/notifly-js-sdk@2/dist/NotiflyServiceWorker.js");`
 - 번들러 사용 시 SW 파일이 번들에 흡수/삭제되지 않도록 assets copy 설정
+- 실제 URL이 HTML fallback이 아니라 JavaScript 파일로 200 응답하는지 확인
 
 예시: `examples/notifly-service-worker.js`
 
@@ -260,30 +270,43 @@ credentials.
 - npm/yarn/pnpm: `notifly-js-sdk` 설치
 - 또는 CDN으로 로드 후 `window.notifly` 접근
 
-**3) SDK 초기화(공식 패턴)**:
+**3) SDK 초기화(현재 SDK 2.5.0+ 공식 패턴)**:
 
-- `projectId`, `username`, `password`는 코드에서 지정
-- (참고) SDK 2.5.0+에서는 웹 푸시 세부 옵션(VAPID/SW 경로/권한 팝업 등)이 콘솔
-  설정값으로 대체될 수 있음(공식 문서 우선)
+- 코드에는 보통 `projectId`, `username`, `password`만 지정합니다.
+- SDK 2.5.0+에서는 세션/웹푸시 세부 옵션(VAPID/SW 경로/권한 팝업/지연시간 등)이
+  콘솔 웹사이트 SDK 설정값으로 대체됩니다.
+- SDK 2.5.0+ 신규 연동에서 `pushSubscriptionOptions`나 top-level
+  `serviceWorkerPath`를 임의로 추가하지 않습니다. Legacy SDK 2.4 이하를 명시적으로
+  지원할 때만 `pushSubscriptionOptions`를 사용합니다.
+- 웹 팝업 HTML 내부에서 사용자 정의 이벤트 로깅이 필요한 경우에만 SDK 2.17.2+에서
+  `allowUserSuppliedLogEvent: true`를 추가합니다.
 
 예시: `examples/web-integration.js`
 
-**4) 권한 요청(공식)**:
+**4) 권한 요청(웹 푸시 사용 시)**:
 
 - 콘솔에서 자동 권한 팝업을 켜면 방문 시 안내 → 브라우저 권한 요청 순서로 동작
-- 특정 타이밍에만 요청하려면(콘솔 자동 노출 OFF)
-  `notifly.requestPermission(...)`
+- 특정 타이밍에만 요청하려면 SDK 2.7.0+에서 콘솔 자동 노출을 끄고
+  `notifly.requestPermission(...)` 호출
+- 브라우저 권한이 이미 `denied`이면 SDK가 다시 요청할 수 없으므로 브라우저/site
+  설정에서 사용자가 직접 변경해야 합니다.
 
-**5) 유저/이벤트(공식)**:
+**5) 유저/이벤트(웹 팝업/타깃팅 핵심)**:
 
-- `notifly.setUserId(userId | null)`
+- 로그인 직후 권장 순서: `setUserId → setUserProperties → trackEvent`
+- `notifly.setUserId(userId | null)` (`null`/무인자는 로그아웃 처리이며 문서상 유저
+  데이터 삭제성 동작이 있으므로 의도 확인)
 - `notifly.setUserProperties({...})`
 - `notifly.trackEvent(name, params, segmentationEventParamKeys)`
+  (`segmentationEventParamKeys`는 최대 1개 키)
 
 **6) Google Tag Manager(GTM) 옵션(선택)**:
 
 - 코드 수정 없이 초기화/유저/이벤트를 구성 가능(공식 GTM 가이드 참고)
-- 단, 웹 푸시를 쓰는 경우 SW 파일 제공은 여전히 필요
+- SDK script load timing과 dataLayer 이벤트 순서를 보장해야 합니다.
+- 단, 웹 푸시를 쓰는 경우 SW 파일 제공은 여전히 필요합니다.
+- CSP가 있으면 `script-src`, `connect-src`, `worker-src`에서 Notifly/CDN 호출을
+  허용해야 합니다.
 
 ### 5단계: SDK 초기화 위치 확정(레포 기준 증빙)
 
@@ -324,24 +347,36 @@ credentials.
 
 ### 6단계: 검증(필수)
 
-1. 스크립트 실행(앱 프로젝트 루트에서):
+1. 모바일 스크립트 실행(앱 프로젝트 루트에서):
 
 - `bash skills/integration/scripts/validate-sdk.sh`
 
 > 참고: 위 스크립트는 **모바일 플랫폼(iOS/Android/Flutter/RN)** 검증용입니다.
-> Web(JavaScript) 연동은 아래의 수동 검증 체크리스트를 사용하세요.
 
-2. 빌드/실행 후 콘솔에서 확인:
+2. Web(JavaScript) 정적 검증:
+
+- `bash skills/integration/scripts/validate-web-sdk.sh /path/to/web-app`
+
+이 스크립트는 `notifly-js-sdk` 설치/CDN, `notifly.initialize(...)`, 자격 증명 마커,
+Service Worker 후보, `NotiflyServiceWorker.js` import, legacy 옵션, user/event API
+마커를 확인합니다. 정적 검증은 충분조건이 아니므로 아래 런타임 검증까지 수행하세요.
+
+3. 빌드/실행 후 콘솔에서 확인:
 
 - 초기화 로그/동작 확인
 - 푸시 토큰 등록(네이티브) 확인
 - Notifly 콘솔에서 이벤트/기기 등록 확인
 
-3. Web 수동 검증(웹 푸시/웹 팝업):
+4. Web 런타임 검증(웹 푸시/웹 팝업):
 
-- `/notifly-service-worker.js`가 실제로 200 응답 + 올바른 내용인지 확인
+- 콘솔에 설정한 Service Worker path가 실제로 200 JS 응답인지 확인
+  (`/notifly-service-worker.js`가 기본 예시이며, HTML fallback이면 실패)
+- DevTools → Application → Service Workers에서 등록/scope 확인
+- Network에서 `/sdk-configurations?project_id=...&type=website` 200 확인
 - 브라우저에서 알림 권한 요청/허용 흐름이 의도대로 동작하는지 확인
+- 권한 허용 후 PushSubscription 생성 및 device property logging 확인
 - `setUserId → setUserProperties → trackEvent` 호출 후 콘솔에서 반영 확인
+- 웹 팝업 캠페인 조건에 맞는 이벤트 호출 시 modal 노출 확인
 
 ### 7단계: 플랫폼별 레포 검증 체크리스트
 
@@ -374,12 +409,19 @@ credentials.
 #### Web (JavaScript)
 
 - `notifly-js-sdk` 설치(npm) 또는 CDN 로드 확인
-- 루트 경로에 Service Worker 파일 존재(예: `public/notifly-service-worker.js`)
-- SW 파일이 `NotiflyServiceWorker.js`를 importScripts 하는지 확인
-- 앱 코드에서 `notifly.initialize({ projectId, username, password, ... })` 호출
-  확인
+- 앱 코드에서 현재 SDK 2.5.0+ 패턴인
+  `notifly.initialize({ projectId, username, password })` 호출 확인
+- 신규 SDK 2.5.0+ 연동에서 `pushSubscriptionOptions` 또는 top-level
+  `serviceWorkerPath`를 추가하지 않았는지 확인(legacy SDK 2.4 이하 예외)
+- (웹 팝업) `setUserId → setUserProperties → trackEvent` 호출 순서와 이벤트/속성 설계가
+  캠페인 조건과 일치
+- (웹 팝업) 웹 팝업 HTML 내부 custom event logging이 필요할 때만
+  `allowUserSuppliedLogEvent: true` 사용
+- (웹 푸시) 콘솔의 Service Worker path와 실제 제공 경로가 일치
+- (웹 푸시) SW 파일이 `NotiflyServiceWorker.js`를 importScripts 하는지 확인
+- (웹 푸시) 기존 PWA/Firebase/OneSignal/Braze/Workbox Service Worker와 scope/handler
+  충돌이 없는지 확인
 - (웹 푸시) 권한 요청 및 구독 흐름이 동작하는지 확인
-- `setUserId`, `setUserProperties`, `trackEvent` 호출이 제품 요구사항과 일치
 
 ### 8단계: 문서화
 
@@ -406,6 +448,7 @@ credentials.
 - `references/sdk-reference.md`
 - `references/error-handling.md`
 - `references/framework-patterns.md`
+- `references/web-javascript.md`
 - `references/mcp-integration.md`
 
 ## 예시(Examples)
@@ -420,4 +463,5 @@ credentials.
 ## 스크립트(Scripts)
 
 - `scripts/install-mcp.sh` (클라이언트에 MCP 서버 구성)
-- `scripts/validate-sdk.sh` (SDK 연동 마커 검증)
+- `scripts/validate-sdk.sh` (모바일 SDK 연동 마커 검증)
+- `scripts/validate-web-sdk.sh` (JavaScript/Web SDK 연동 마커 검증)
