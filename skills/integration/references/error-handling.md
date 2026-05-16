@@ -11,10 +11,11 @@
 
 해결:
 
-- 다음 **3가지** 값이 모두 있는지 확인:
-  - `NOTIFLY_PROJECT_ID`
-  - `NOTIFLY_USERNAME`
-  - `NOTIFLY_PASSWORD`
+- 실제 설정값은 `NOTIFLY_PROJECT_ID`, `NOTIFLY_USERNAME`을 확인
+- SDK API가 `password` 인자/필드를 요구하면 별도 secret/env를 찾지 말고 빈 값,
+  `username`, 또는 프로젝트 더미값을 넘김
+- Web에서 `NEXT_PUBLIC_NOTIFLY_PASSWORD`/`NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD`를
+  새로 요구하지 않음
 - 값이 `https://console.notifly.tech/`에서 발급된 것인지 확인 (Project Settings
   → SDK credentials)
 

@@ -4,8 +4,8 @@
  * Minimal browser-only pattern for React/Next.js/Vite/etc.
  *
  * Notes:
- * - SDK 2.5.0+ usually needs projectId, username, password in code.
- *   This credential triple is the same contract across Notifly platforms.
+ * - SDK 2.5.0+ uses projectId, username, and a compatibility password field.
+ *   Current policy does not use password; do not require a public password env.
  * - Web push options such as VAPID, serviceWorkerPath, askPermission, and prompt
  *   delay come from Notifly Console website SDK settings.
  * - For Web Push, serve a Service Worker file that imports NotiflyServiceWorker.js.
@@ -28,7 +28,7 @@ export function useNotiflyWeb() {
 
     const projectId = process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_ID;
     const username = process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_USERNAME;
-    const password = process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD;
+    const password = username || ""; // compatibility field; do not require a public password env
 
     if (!projectId) throw new Error("Missing Notifly projectId");
     if (!/^[a-f0-9]{32}$/i.test(projectId)) throw new Error("Invalid Notifly projectId");

@@ -103,21 +103,25 @@ MCP 도구가 없다면 먼저 `notifly-mcp-server`를 구성하세요:
 
 ### 2단계: 자격 증명(SDK)
 
-Notifly SDK 자격 증명은 플랫폼 무관하게 같은 triple을 사용합니다:
+Notifly SDK 설정의 실제 입력은 플랫폼 무관하게 `projectId`와 `username`을 기준으로
+확인합니다. 일부 SDK API는 호환성을 위해 `password` 인자/필드를 계속 요구하지만, 현재
+정책상 password 값은 사용하지 않습니다.
 
 - `NOTIFLY_PROJECT_ID`
 - `NOTIFLY_USERNAME`
-- `NOTIFLY_PASSWORD`
+- `password` 인자/필드가 필요하면 빈 문자열(`""`) 또는 `username`과 같은 더미값
 
 Notifly 콘솔에서 확인: `https://console.notifly.tech/` → Project Settings → SDK
 credentials.
 
 **권장 사항**:
 
-- iOS/Android/Flutter/RN/Web 모두 공식 초기화 계약은 `projectId`, `username`,
-  `password`입니다. Web만 별도 password 정책을 만든다고 가정하거나 `password` 필드를
-  임의로 제거하지 마세요.
-- 자격 증명을 소스에 하드코딩/커밋하지 마세요.
+- iOS/Android/Flutter/RN/Web 모두 password를 별도 secret/env로 요구하지 마세요.
+  특히 Web에서 `NEXT_PUBLIC_NOTIFLY_PASSWORD` 또는 `NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD`
+  같은 공개 password env를 새로 만들지 않습니다.
+- SDK 타입/시그니처가 `password` 필드를 요구하면 필드는 유지하되, `""`, `username`,
+  또는 프로젝트가 정한 더미값을 넘깁니다.
+- `projectId`/`username` 값을 소스에 하드코딩/커밋하지 마세요.
 - 플랫폼에 맞는 런타임/빌드타임 주입 방식을 사용하세요. Web은 번들 공개성을 고려해
   프로젝트가 정한 public config/server-injected config/빌드타임 config 정책을 따릅니다.
 - `.env.example`의 존재/내용은 프로젝트마다 다를 수 있으므로 연동 품질의 필수 판정
@@ -186,7 +190,9 @@ credentials.
 **초기화(공식)**:
 
 - `Application.onCreate()`에서 초기화:
-  - `Notifly.initialize(applicationContext, NOTIFLY_PROJECT_ID, BuildConfig.NOTIFLY_USERNAME, BuildConfig.NOTIFLY_PASSWORD)`
+  - `Notifly.initialize(applicationContext, NOTIFLY_PROJECT_ID, BuildConfig.NOTIFLY_USERNAME, "")`
+  - SDK 시그니처가 `password` 값을 요구하면 빈 값/`username` 더미값을 넘기며,
+    별도 `NOTIFLY_PASSWORD` secret을 요구하지 않습니다.
 
 **유저 식별(초기화 후, 공식)**:
 
@@ -210,7 +216,8 @@ credentials.
 **초기화(공식)**:
 
 - `Firebase.initializeApp()` 보장
-- `await NotiflyPlugin.initialize(projectId: ..., username: ..., password: ...)`
+- `await NotiflyPlugin.initialize(projectId: ..., username: ..., password: "")`
+  (`password` 인자가 필요하면 빈 값/`username` 더미값 사용)
 - (선택) 콘솔에서 “자동 권한 요청”이 비활성화된 경우:
   `await NotiflyPlugin.requestPermission()`
 - (선택) 인앱 팝업 이벤트 구독(공식 예시):
@@ -283,9 +290,11 @@ credentials.
 
 **3) SDK 초기화(현재 SDK 2.5.0+ 공식 패턴)**:
 
-- 코드에는 보통 `projectId`, `username`, `password`만 지정합니다. 이 credential
-  triple은 다른 Notifly SDK와 동일한 계약입니다. Web 전용으로 `password`를 제거하거나
-  임의 placeholder 정책을 만들지 말고, 대상 프로젝트의 주입/노출 정책을 확인합니다.
+- 코드에는 `projectId`, `username`, 그리고 SDK 시그니처 호환용 `password` 필드를
+  둡니다. 단, password 값은 사용하지 않으므로 별도 secret/env를 요구하지 말고
+  `""`, `username`, 또는 프로젝트가 정한 더미값을 넘깁니다. 특히 Web에서
+  `NEXT_PUBLIC_NOTIFLY_PASSWORD`/`NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD`를 새로 요구하지
+  않습니다.
 - `projectId`가 env/config/콘솔 입력처럼 외부에서 들어오면 형식 검증(프로젝트 규칙,
   예: 32자 hex)과 missing/invalid 오류 분리를 유지합니다. 기존 config parser와 테스트가
   있으면 삭제하지 말고 확장합니다.
@@ -338,8 +347,9 @@ credentials.
 ### 5단계: SDK 초기화 위치 확정(레포 기준 증빙)
 
 이 단계는 “어디에 코드를 넣는지”와 “레포에서 증명 가능한지”를 점검합니다.
-기존 앱에 provider/config/client/test 구조가 있으면 새 단일 파일로 덮어쓰지 말고 그 구조를
-보존한 채 필요한 SDK 호출과 검증만 추가합니다.
+기존 앱에 provider/config/client/test 구조가 있으면 새 단일 파일로 덮어쓰기보다 그 구조를
+보존한 채 필요한 SDK 호출과 검증만 추가하는 편이 좋습니다. 다만 이 항목들은 기존 앱의
+명시적 계약을 깨지 않는 한 hard blocker가 아니라 quality/parity 신호로 보고합니다.
 
 #### iOS 초기화 체크리스트
 
@@ -347,7 +357,7 @@ credentials.
   `@UIApplicationDelegateAdaptor(AppDelegate.self)` 사용)
 - **필수 포함**:
   - `FirebaseApp.configure()`
-  - `Notifly.initialize(projectId:username:password)`
+  - `Notifly.initialize(projectId:username:password)` (`password`는 빈 값/더미값)
   - `UNUserNotificationCenter.current().delegate = self`
   - 아래 콜백 전달:
     - `application(_:didRegisterForRemoteNotificationsWithDeviceToken:)`
@@ -447,8 +457,9 @@ Service Worker 후보, `NotiflyServiceWorker.js` import, legacy 옵션, user/eve
 - `notifly-js-sdk` 설치(npm) 또는 CDN 로드 확인
 - 앱 코드에서 현재 SDK 2.5.0+ 패턴인
   `notifly.initialize({ projectId, username, password })` 호출 확인
-- SDK credential triple(`projectId`, `username`, `password`)은 플랫폼 공통 계약입니다.
-  Web 전용으로 password 정책을 바꾸지 않고, 프로젝트의 주입/노출 정책을 확인합니다.
+- SDK 호환용 `password` 필드는 필요하면 유지하되, password 값은 사용하지 않으므로
+  별도 공개 env/secret을 요구하지 않습니다. `""`, `username`, 또는 프로젝트 더미값을
+  넘기고, 프로젝트의 주입/노출 정책을 확인합니다.
 - 외부 config에서 받은 `projectId` 검증과 missing/invalid 오류 분리를 보존합니다.
   기존 config parser/provider/tests가 있으면 삭제하지 말고 확장합니다.
 - 신규 SDK 2.5.0+ 연동에서 `pushSubscriptionOptions` 또는 top-level

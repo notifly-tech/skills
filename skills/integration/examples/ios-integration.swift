@@ -42,7 +42,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         Notifly.initialize(
             projectId: "YOUR_PROJECT_ID",
             username: "YOUR_USERNAME",
-            password: "YOUR_PASSWORD"
+            password: "YOUR_USERNAME" // password is unused; pass username/empty dummy for compatibility
         )
         
         // 4) UNUserNotificationCenter delegate 설정(푸시 클릭 + 포그라운드 처리)

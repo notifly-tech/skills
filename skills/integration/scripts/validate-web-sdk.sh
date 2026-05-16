@@ -76,9 +76,13 @@ else
 fi
 
 if contains 'projectId[[:space:]]*:' "${SOURCE_FILES[@]}" && contains 'username[[:space:]]*:' "${SOURCE_FILES[@]}" && contains 'password[[:space:]]*:' "${SOURCE_FILES[@]}"; then
-  ok "initialize credential markers found: projectId, username, password"
+  ok "initialize config markers found: projectId, username, password compatibility field"
 else
-  fail "initialize credential markers missing: projectId, username, password"
+  fail "initialize config markers missing: projectId, username, password compatibility field"
+fi
+
+if contains 'NEXT_PUBLIC_NOTIFLY(_PROJECT)?_PASSWORD|NOTIFLY(_PROJECT)?_PASSWORD' "${SOURCE_FILES[@]}"; then
+  warn "password env marker found; Notifly password is unused, so do not require NEXT_PUBLIC_NOTIFLY_PASSWORD/NOTIFLY_PASSWORD unless preserving legacy project config"
 fi
 
 if contains 'projectId.*(32|invalid|Invalid|validate)|validate.*projectId|length[[:space:]]*[!=]={0,2}[[:space:]]*32|\^\[a-f0-9\]|\[a-fA-F0-9\]\{32\}' "${SOURCE_FILES[@]}"; then

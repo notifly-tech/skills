@@ -24,7 +24,7 @@ class MainApplication : Application() {
             applicationContext,
             NOTIFLY_PROJECT_ID,
             BuildConfig.NOTIFLY_USERNAME,
-            BuildConfig.NOTIFLY_PASSWORD
+            BuildConfig.NOTIFLY_USERNAME // password is unused; pass a dummy compatibility value
         )
     }
 }
@@ -40,6 +40,6 @@ class MainApplication : Application() {
 //   defaultConfig {
 //     buildConfigField("String", "NOTIFLY_PROJECT_ID", "\"YOUR_PROJECT_ID\"")
 //     buildConfigField("String", "NOTIFLY_USERNAME", "\"YOUR_USERNAME\"")
-//     buildConfigField("String", "NOTIFLY_PASSWORD", "\"YOUR_PASSWORD\"")
+//     // Do not define a NOTIFLY_PASSWORD secret; pass username/empty dummy if the SDK signature requires password.
 //   }
 // }

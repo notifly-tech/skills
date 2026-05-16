@@ -104,16 +104,17 @@ Next.js가 아니면 먼저 프로젝트의 프레임워크를 확인합니다.
 
 ## 현재 SDK 2.5+ 초기화 계약
 
-Notifly SDK credential triple은 플랫폼 무관하게 동일합니다: `projectId`, `username`,
-`password`. Web 전용으로 password 정책을 바꾸거나 `password` 필드를 제거한다고 가정하지
-마세요. 다만 브라우저 번들은 사용자에게 보일 수 있으므로, 실제 주입/노출 방식은 대상
-프로젝트의 public config/server-injected config/빌드타임 config 정책을 따릅니다. `.env.example`은
-프로젝트마다 다를 수 있으므로 연동 품질의 필수 판정 기준으로 삼지 않습니다.
+Notifly JavaScript SDK는 `notifly.initialize({ projectId, username, password })` 형태를
+사용합니다. 다만 현재 정책상 password 값은 사용하지 않습니다. 별도
+`NEXT_PUBLIC_NOTIFLY_PASSWORD`/`NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD`를 요구하지 말고,
+SDK 타입/시그니처 호환을 위해 `password` 필드에는 빈 문자열, `username`, 또는 프로젝트가
+정한 더미값을 넘깁니다. `.env.example`은 프로젝트마다 다를 수 있으므로 연동 품질의 필수
+판정 기준으로 삼지 않습니다.
 
 ```js
 const projectId = process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_ID;
 const username = process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_USERNAME;
-const password = process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD;
+const password = username || ""; // compatibility field; do not require NEXT_PUBLIC_NOTIFLY_PASSWORD
 
 if (!projectId) throw new Error("Missing Notifly projectId");
 if (!/^[a-f0-9]{32}$/i.test(projectId)) throw new Error("Invalid Notifly projectId");
@@ -154,7 +155,7 @@ Legacy SDK 2.4 이하를 명시적으로 지원해야 할 때만 `pushSubscripti
 - 브라우저에서만 실행합니다. SSR 중 `window` 접근 금지.
 - React StrictMode에서 effect가 두 번 실행될 수 있으므로 앱 레벨에서 한 번만 초기화되게 합니다.
 - Next.js App Router에서는 client component 또는 client-only provider 안에서 초기화합니다.
-- 기존 `Provider`/config parser/SDK client/test 구조가 있으면 유지하고, 필요한 호출만 추가합니다.
+- 기존 `Provider`/config parser/SDK client/test 구조가 있으면 가능하면 유지하고, 필요한 호출만 추가합니다. 다만 기존 앱의 명시적 계약을 깨지 않는 한 이 항목은 blocker가 아니라 parity/maintainability 신호입니다.
 
 예시:
 
@@ -172,7 +173,7 @@ export function useNotifly() {
     notifly.initialize({
       projectId: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_ID,
       username: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_USERNAME,
-      password: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD,
+      password: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_USERNAME || "",
     });
 
     notiflyInitialized = true;

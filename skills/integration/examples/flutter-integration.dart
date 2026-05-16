@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
     await NotiflyPlugin.initialize(
       projectId: 'YOUR_PROJECT_ID',
       username: 'YOUR_USERNAME',
-      password: 'YOUR_PASSWORD',
+      password: 'YOUR_USERNAME', // password is unused; pass username/empty dummy for compatibility
     );
 
     // 인앱 메시지 이벤트 구독

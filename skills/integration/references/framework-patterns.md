@@ -23,7 +23,7 @@
 
 - `UNUserNotificationCenter.current().requestAuthorization(...)`
 - `FirebaseApp.configure()`
-- `Notifly.initialize(projectId:username:password)`
+- `Notifly.initialize(projectId:username:password)` (`password`는 빈 값/더미값)
 - `UNUserNotificationCenter.current().delegate = self`
 - `Notifly.application(_:didRegisterForRemoteNotificationsWithDeviceToken:)`
 
@@ -34,7 +34,8 @@
 
 핵심 호출:
 
-- `Notifly.initialize(applicationContext, projectId, username, password)`
+- `Notifly.initialize(applicationContext, projectId, username, "")`
+  (`password` 인자가 필요하면 빈 값/`username` 더미값 사용)
 
 ## React Native
 
@@ -50,15 +51,17 @@
 - `notifly_flutter` 추가
 - 초기화:
 
-- `await NotiflyPlugin.initialize(projectId: ..., username: ..., password: ...)`
+- `await NotiflyPlugin.initialize(projectId: ..., username: ..., password: "")`
+  (`password` 인자가 필요하면 빈 값/`username` 더미값 사용)
 - 선택: `NotiflyPlugin.inAppEvents.listen(...)`
 
 ## Web / JavaScript
 
 - SDK는 브라우저 환경에서만 초기화합니다. SSR 중 `window` 접근 금지.
-- SDK 2.5.0+에서는 코드에 `projectId`, `username`, `password`만 두고, 웹푸시 세부
-  옵션은 Notifly 콘솔 웹사이트 SDK 설정을 기준으로 합니다. 이 credential triple은
-  iOS/Android/Flutter/RN/Web 공통 계약이므로 Web 전용으로 password 정책을 바꾸지 않습니다.
+- SDK 2.5.0+에서는 코드에 `projectId`, `username`, 그리고 호환용 `password` 필드를
+  둡니다. 단, password 값은 사용하지 않으므로 별도 secret/env로 요구하지 말고
+  빈 값, `username`, 또는 프로젝트 더미값을 넘깁니다. Web에서도
+  `NEXT_PUBLIC_NOTIFLY_PASSWORD`류 공개 password env를 새로 만들지 않습니다.
 - 외부 config의 `projectId`는 프로젝트 규칙에 맞게 검증하고, 기존 config/provider/test
   구조가 있으면 보존합니다.
 - 웹 팝업은 `trackEvent`와 유저/프로퍼티 동기화가 핵심입니다.
@@ -84,7 +87,7 @@ export function useNotifly() {
     notifly.initialize({
       projectId: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_ID,
       username: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_USERNAME,
-      password: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD,
+      password: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_USERNAME || "",
     });
 
     notiflyInitialized = true;
