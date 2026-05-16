@@ -1,41 +1,62 @@
 /**
  * Notifly JavaScript SDK integration (example)
  *
- * This is a minimal example you can adapt to React/Next.js/Vue/etc.
+ * Minimal browser-only pattern for React/Next.js/Vite/etc.
  *
  * Notes:
- * - The SDK runs only in the browser (window exists).
- * - For Web Push, you must serve a Service Worker file (see `notifly-service-worker.js`).
+ * - SDK 2.5.0+ usually needs only projectId, username, password in code.
+ * - Web push options such as VAPID, serviceWorkerPath, askPermission, and prompt
+ *   delay come from Notifly Console website SDK settings.
+ * - For Web Push, serve a Service Worker file that imports NotiflyServiceWorker.js.
  * - Credentials should be injected via env/secrets; do not hardcode real values.
  */
 
+import { useEffect, useRef } from "react";
 import notifly from "notifly-js-sdk";
 
-export function initNotiflyWeb() {
-  if (typeof window === "undefined") return;
+export function useNotiflyWeb() {
+  const initialized = useRef(false);
 
-  notifly.initialize({
-    projectId: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_ID,
-    username: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_USERNAME,
-    password: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD,
-    // For some versions / setups you may need:
-    // serviceWorkerPath: "/notifly-service-worker.js",
-  });
+  useEffect(() => {
+    if (initialized.current) return;
+    if (typeof window === "undefined") return;
+
+    initialized.current = true;
+
+    notifly.initialize({
+      projectId: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_ID,
+      username: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_USERNAME,
+      password: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD,
+      // Only enable when a web-popup HTML template needs to emit custom events.
+      // allowUserSuppliedLogEvent: true,
+    });
+  }, []);
 }
 
-export function loginNotifly(userId) {
-  notifly.setUserId(userId);
+export async function loginNotifly(userId, userProperties = {}) {
+  // Recommended order after login: setUserId -> setUserProperties -> trackEvent.
+  await notifly.setUserId(userId);
+  if (Object.keys(userProperties).length > 0) {
+    await notifly.setUserProperties(userProperties);
+  }
+  await notifly.trackEvent("login");
 }
 
-export function logoutNotifly() {
-  // Warning: per docs, setting null can reset user data associated with the user.
-  notifly.setUserId(null);
+export async function logoutNotifly() {
+  // Warning: per docs, null/unset unregisters the user and can remove user data.
+  await notifly.setUserId(null);
 }
 
 export function setNotiflyUserProperties(props) {
-  notifly.setUserProperties(props);
+  return notifly.setUserProperties(props);
 }
 
 export function trackNotiflyEvent(name, params, segmentationEventParamKeys) {
-  notifly.trackEvent(name, params, segmentationEventParamKeys);
+  // segmentationEventParamKeys supports at most one key.
+  return notifly.trackEvent(name, params, segmentationEventParamKeys);
+}
+
+export function requestNotiflyPushPermission(language) {
+  // Manual prompt requires SDK 2.7.0+ and console auto prompt disabled.
+  return notifly.requestPermission(language);
 }

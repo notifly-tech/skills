@@ -7,6 +7,7 @@
 - `https://docs.notifly.tech/ko/developer-guide/android-sdk.md`
 - `https://docs.notifly.tech/ko/developer-guide/react-native-sdk.md`
 - `https://docs.notifly.tech/ko/developer-guide/flutter-sdk.md`
+- `https://docs.notifly.tech/ko/developer-guide/javascript-sdk`
 
 ## 공통 사전 요구사항
 
@@ -51,3 +52,43 @@
 
 - `await NotiflyPlugin.initialize(projectId: ..., username: ..., password: ...)`
 - 선택: `NotiflyPlugin.inAppEvents.listen(...)`
+
+## Web / JavaScript
+
+- SDK는 브라우저 환경에서만 초기화합니다. SSR 중 `window` 접근 금지.
+- SDK 2.5.0+에서는 코드에 `projectId`, `username`, `password`만 두고, 웹푸시 세부
+  옵션은 Notifly 콘솔 웹사이트 SDK 설정을 기준으로 합니다.
+- 웹 팝업은 `trackEvent`와 유저/프로퍼티 동기화가 핵심입니다.
+- 웹 푸시는 Service Worker path/scope, HTTPS, Notification 권한, PushSubscription이
+  핵심입니다.
+
+React/Next.js 핵심 패턴:
+
+```js
+import { useEffect, useRef } from "react";
+import notifly from "notifly-js-sdk";
+
+export function useNotifly() {
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    if (initialized.current) return;
+    if (typeof window === "undefined") return;
+
+    initialized.current = true;
+    notifly.initialize({
+      projectId: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_ID,
+      username: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_USERNAME,
+      password: process.env.NEXT_PUBLIC_NOTIFLY_PROJECT_PASSWORD,
+    });
+  }, []);
+}
+```
+
+웹 푸시 Service Worker 기본 파일:
+
+```js
+self.importScripts(
+  "https://cdn.jsdelivr.net/npm/notifly-js-sdk@2/dist/NotiflyServiceWorker.js"
+);
+```
