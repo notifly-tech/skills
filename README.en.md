@@ -15,6 +15,15 @@ Integrate Notifly Mobile SDK into iOS, Android, Flutter, and React Native projec
 - Adding Notifly push notifications to an existing project
 - Setting up SDK for iOS, Android, Flutter, or React Native
 
+### braze-to-notifly-migration
+
+Migrate Flutter Braze SDK integrations to the Notifly Flutter SDK and Remote MCP-based operational workflow.
+
+**Use when:**
+- Migrating CRM, push, or in-app SDK flows from Braze to Notifly
+- Deciding whether to fully remove Braze now or coexist with Notifly for a period
+- Mapping Braze events, user attributes, push clicks, and in-app flows to Notifly SDK/MCP workflows
+
 
 ## Installation
 
