@@ -126,6 +126,9 @@ await NotiflyPlugin.setUserProperties({
 주의:
 
 - Notifly 세그먼트에서 쓸 key 이름을 MCP의 `list_user_properties`와 콘솔 기준으로 맞춥니다.
+  단, SDK 연동 전 프로젝트에서는 `list_user_properties`가 비어 있거나 기존 서버/API 속성만
+  보일 수 있습니다. 이 경우 Braze 코드에서 목표 key/type catalog를 먼저 만들고, Notifly SDK
+  배포 후 MCP/콘솔에서 수집 여부를 재검증합니다.
 - Braze reserved/profile fields를 Notifly 사전 정의 key로 옮길 수 있는지 확인합니다.
   예: email은 `$email`, phone은 `$phone_number`.
 - 타입이 바뀌면 기존 세그먼트 조건이 깨질 수 있으므로 string/number/bool/list 형태를 유지합니다.
@@ -156,8 +159,11 @@ await NotiflyPlugin.trackEvent(
 주의:
 
 - 이벤트 이름은 되도록 유지해야 migration 전후 funnel/trigger 의미가 유지됩니다.
+- pre-integration MCP의 `list_project_events`가 비어 있으면 정상일 수 있습니다. Braze
+  `logCustomEvent`/`logPurchase` callsite에서 목표 event catalog를 만들고, SDK 적용 후
+  MCP/콘솔에서 실제 수집된 event를 재조회합니다.
 - Notifly에서 세그먼트 분류에 사용할 event param key는 `segmentationEventParamKeys`로 최대 1개만 지정합니다.
-- MCP `list_project_events`로 이미 수집되는 이벤트와 naming convention을 먼저 확인합니다.
+- MCP `list_project_events`에 이미 수집된 이벤트가 있다면 naming convention을 맞춰 확인합니다.
 
 ### 5. 푸시 클릭/deeplink
 

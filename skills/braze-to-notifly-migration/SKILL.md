@@ -25,12 +25,16 @@ user-invocable: true
    - `coexist`: 일정 기간 Braze와 Notifly를 공존시키고, 나중에 Braze를 제거합니다.
 2. **Remote MCP 우선:** Notifly 설정/프로젝트/캠페인/문서 정보는 Remote MCP에서
    확인합니다. 로컬 `npx notifly-mcp-server`를 기본으로 깔지 마세요.
-3. **기능 동등성 분리:** Braze의 모든 기능이 Notifly SDK 1개 API로 1:1 대응하지
+3. **Pre-SDK catalog 한계 인지:** Notifly SDK가 아직 연동되지 않은 프로젝트에서는 MCP가
+   제공하는 `user_properties`/`events` 카탈로그가 비어 있거나 제한적일 수 있습니다. 이를
+   "이벤트가 없다"로 해석하지 말고, Braze 코드 인벤토리와 제품 요구사항에서 목표 taxonomy를
+   먼저 만들고 SDK 연동 후 MCP/콘솔로 수집 여부를 검증합니다.
+4. **기능 동등성 분리:** Braze의 모든 기능이 Notifly SDK 1개 API로 1:1 대응하지
    않습니다. 이벤트/유저/푸시는 코드로 이전 가능하지만, Content Cards/Feature Flags는
    제품·캠페인 설계 결정이 필요합니다.
-4. **초안만 생성:** MCP 쓰기 도구는 캠페인/유저 여정 초안 생성·수정까지만 사용합니다.
+5. **초안만 생성:** MCP 쓰기 도구는 캠페인/유저 여정 초안 생성·수정까지만 사용합니다.
    활성화, 발송, 삭제를 자동 수행하지 마세요.
-5. **검증 전 제거 금지:** complete mode라도 빌드/정적 검색/런타임 검증 전에는 Braze
+6. **검증 전 제거 금지:** complete mode라도 빌드/정적 검색/런타임 검증 전에는 Braze
    의존성과 설정을 제거하지 않습니다.
 
 ## 0단계: migration mode 확인(필수)
@@ -134,11 +138,16 @@ codex mcp list
    - `list_project_events`
    - `list_user_properties`
    - `list_project_channels`
-3. 기존 캠페인/성과/유저 상태 확인:
+3. **중요:** SDK 연동 전이거나 아직 해당 앱에서 Notifly 이벤트를 보내지 않았다면
+   `list_project_events`/`list_user_properties` 결과가 비어 있거나 일부 서버/API 이벤트만
+   보일 수 있습니다. 이 상태는 정상적인 pre-integration 상태일 수 있으므로, migration을
+   막는 blocker로 보지 않습니다. 대신 Braze 코드 인벤토리에서 목표 event/property catalog를
+   만들고, SDK 적용 후 같은 MCP 도구로 수집 여부를 재검증합니다.
+4. 기존 캠페인/성과/유저 상태 확인:
    - `list_campaigns`, `get_campaign`, `get_campaign_statistics`
    - `identify_user`, `list_user_channels`, `list_user_events`
    - `get_campaign_user_eligibility`, `list_campaign_user_deliveries`
-4. 공식 문서 확인:
+5. 공식 문서 확인:
    - `search_notifly_docs`
    - `query_docs_filesystem_notifly_docs`
 
@@ -168,20 +177,24 @@ codex mcp list
 ### complete mode
 
 1. Notifly SDK를 추가하고 초기화/유저/이벤트/푸시 클릭 경로를 구현합니다.
-2. Notifly 콘솔/MCP로 이벤트·유저 속성·채널 상태가 들어오는지 검증합니다.
-3. 검증 후 Braze callsite를 제거합니다.
-4. 마지막에 Braze dependency/resource/manifest/service/iOS imports/config를 제거합니다.
-5. 정적 검색으로 Braze 흔적이 의도한 문서/마이그레이션 노트 외에 남지 않았는지 확인합니다.
+2. Braze 코드에서 추출한 목표 event/property catalog를 Notifly naming/type 기준으로 정리합니다.
+   pre-integration MCP catalog가 비어 있더라도 이 단계는 진행합니다.
+3. Notifly 콘솔/MCP로 이벤트·유저 속성·채널 상태가 들어오는지 검증합니다.
+4. 검증 후 Braze callsite를 제거합니다.
+5. 마지막에 Braze dependency/resource/manifest/service/iOS imports/config를 제거합니다.
+6. 정적 검색으로 Braze 흔적이 의도한 문서/마이그레이션 노트 외에 남지 않았는지 확인합니다.
 
 ### coexist mode
 
 1. 기존 Braze 코드는 유지합니다.
 2. 작은 adapter/service를 만들어 이벤트·유저 식별·유저 속성을 Braze와 Notifly에
    동시에 기록합니다.
-3. 푸시/인앱은 중복 발송 위험이 있으므로, Notifly 캠페인은 초안 또는 제한된 내부 세그먼트로
+3. pre-integration MCP의 `list_project_events`/`list_user_properties`가 비어 있으면 정상으로
+   보고, Braze callsite에서 dual-write 대상 catalog를 먼저 만든 뒤 릴리즈 후 재조회합니다.
+4. 푸시/인앱은 중복 발송 위험이 있으므로, Notifly 캠페인은 초안 또는 제한된 내부 세그먼트로
    시작합니다.
-4. 공존 기간 동안 parity 로그/콘솔 지표/MCP 조회로 이벤트 수집과 유저 상태를 비교합니다.
-5. 제거 작업은 별도 `complete` 단계로 분리합니다.
+5. 공존 기간 동안 parity 로그/콘솔 지표/MCP 조회로 이벤트 수집과 유저 상태를 비교합니다.
+6. 제거 작업은 별도 `complete` 단계로 분리합니다.
 
 예시 adapter는 `examples/flutter_dual_write_adapter.dart`를 참고하세요.
 
@@ -229,6 +242,8 @@ flutter build ios --debug --no-codesign
 - 변경 파일 목록
 - Braze 기능별 대응 상태: migrated / coexist / intentionally unchanged / unsupported-needs-design
 - MCP로 확인한 Notifly project/channel/event/property 정보 요약
+  - 단, SDK 연동 전 `event/property` catalog가 비어 있거나 제한적이면 이를 정상적인 한계로
+    표시하고, Braze 코드에서 도출한 목표 catalog와 연동 후 재검증 계획을 별도로 적습니다.
 - 실행한 검증 명령과 결과
 - 남은 수동 작업: 콘솔 캠페인 활성화, Braze 캠페인 stop, 다음 릴리즈 제거 작업 등
 

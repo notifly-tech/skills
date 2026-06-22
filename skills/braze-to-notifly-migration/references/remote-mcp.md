@@ -154,7 +154,10 @@ fallback으로 사용합니다. 정상 연결이면 `codex mcp list`에서 Auth�
 
 1. `list_products` / `list_projects`로 대상 프로젝트를 식별합니다.
 2. `list_project_channels`로 app push/in-app/email/SMS/Kakao 등 활성 채널을 확인합니다.
-3. `list_project_events` / `list_user_properties`로 Braze event/property mapping을 검증합니다.
+3. `list_project_events` / `list_user_properties`로 이미 수집된 catalog를 확인합니다. 단,
+   SDK 연동 전 또는 신규 앱에서는 결과가 비어 있거나 제한적일 수 있습니다. 이를 blocker나
+   "이벤트 없음" 결론으로 처리하지 말고, Braze 코드 인벤토리에서 목표 event/property catalog를
+   만들고 SDK 배포 후 같은 도구로 재검증하세요.
 4. Notifly SDK 연동 API는 `search_notifly_docs`와 `query_docs_filesystem_notifly_docs`로 공식 문서를 확인합니다.
 5. 캠페인 이전이 필요하면 `list_campaigns`로 기존 Notifly 상태를 확인합니다.
 6. 새 초안이 필요하면 `describe_campaign_payload` → `create_campaign` 순서로 진행합니다.
