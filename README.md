@@ -15,14 +15,15 @@ iOS, Android, Flutter, React Native 프로젝트에 노티플라이 모바일 SD
 - 기존 프로젝트에 노티플라이 푸시 알림을 추가할 때
 - iOS, Android, Flutter, React Native 환경에서 SDK를 설정할 때
 
-### braze-to-notifly-migration
+### migrate-from-braze
 
-Flutter 앱의 Braze SDK 연동을 Notifly Flutter SDK와 Remote MCP 기반 운영 흐름으로 이전하는 스킬입니다.
+iOS, Android, Flutter, React Native, Expo, Web 프로젝트의 Braze SDK 연동을 Notifly SDK와 Remote MCP 기반 운영 흐름으로 이전하는 스킬입니다.
 
 **사용 시기:**
 - Braze에서 Notifly로 CRM/푸시/인앱 SDK를 이전할 때
 - Braze를 완전히 제거할지, 일정 기간 Notifly와 공존시킬지 먼저 결정해야 할 때
-- Braze 이벤트·유저 속성·푸시 클릭·인앱 흐름을 Notifly SDK/MCP 기반으로 매핑할 때
+- SDK 연동 전 MCP event/property catalog가 비어 있을 수 있음을 고려해 Braze 코드 기준 목표 catalog를 만들 때
+- 플랫폼별 Braze 이벤트·유저 속성·푸시 클릭·인앱 흐름을 Notifly SDK/MCP 기반으로 매핑할 때
 
 
 ## 설치
