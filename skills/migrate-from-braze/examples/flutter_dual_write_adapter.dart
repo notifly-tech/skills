@@ -38,10 +38,12 @@ class MarketingMigrationAdapter {
   }
 
   Future<void> setUserId(String? userId) async {
-    await NotiflyPlugin.setUserId(userId);
     if (dualWrite) {
+      // In coexist mode, preserve the existing Braze path even if the new
+      // Notifly write fails during rollout.
       await onBrazeSetUserId?.call(userId);
     }
+    await NotiflyPlugin.setUserId(userId);
   }
 
   Future<void> setUserProperties(Map<String, Object?> properties) async {
@@ -53,10 +55,12 @@ class MarketingMigrationAdapter {
 
     if (compact.isEmpty) return;
 
-    await NotiflyPlugin.setUserProperties(compact);
     if (dualWrite) {
+      // Keep Braze as the source-of-truth path during coexist; Notifly is the
+      // added write and must not prevent existing Braze tracking.
       await onBrazeSetUserProperties?.call(compact);
     }
+    await NotiflyPlugin.setUserProperties(compact);
   }
 
   Future<void> trackEvent(
@@ -69,15 +73,17 @@ class MarketingMigrationAdapter {
         if (entry.value != null) entry.key: entry.value!,
     };
 
+    if (dualWrite) {
+      // Preserve the existing Braze event before attempting the new Notifly
+      // write, so rollout/config/channel failures do not corrupt parity data.
+      await onBrazeTrackEvent?.call(eventName, compactParams);
+    }
+
     await NotiflyPlugin.trackEvent(
       eventName: eventName,
       eventParams: compactParams,
       segmentationEventParamKeys: segmentationEventParamKeys,
     );
-
-    if (dualWrite) {
-      await onBrazeTrackEvent?.call(eventName, compactParams);
-    }
   }
 
   Future<void> addAndroidPushClickRouter(
