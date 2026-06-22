@@ -8,16 +8,25 @@ Skills follow the [Agent Skills](https://agentskills.io/) format.
 
 ### notifly-integration
 
-Integrate Notifly Mobile SDK into iOS, Android, Flutter, and React Native projects, and configure the Notifly MCP Server.
+- Skill name: `notifly-integration`
+- Display name: `SDK Integration`
+- Path: `skills/integration`
+
+Integrate the Notifly SDK into Mobile (iOS/Android/Flutter/React Native) and Web (JavaScript/Google Tag Manager) projects, with Notifly MCP setup and verification guidance when needed.
 
 **Use when:**
 - Integrating Notifly SDK into a new project
-- Adding Notifly push notifications to an existing project
-- Setting up SDK for iOS, Android, Flutter, or React Native
+- Adding push notifications, in-app popups, web popups, user identity, user properties, or event tracking to an existing project
+- Setting up SDK for iOS, Android, Flutter, React Native, Web, or Google Tag Manager
+- Configuring Notifly MCP or verifying a Notifly SDK integration
 
 ### migrate-from-braze
 
-Migrate Braze SDK integrations to Notifly SDK and Remote MCP-based operational workflows across iOS, Android, Flutter, React Native, Expo, and Web projects.
+- Skill name: `migrate-from-braze`
+- Display name: `Migrate from Braze to Notifly`
+- Path: `skills/migrate-from-braze`
+
+Migrate Braze SDK integrations to Notifly SDK and Remote MCP-based operational workflows across iOS (Swift), Android (Kotlin/Java), Flutter, React Native, Expo, and Web projects.
 
 **Use when:**
 - Migrating CRM, push, or in-app SDK flows from Braze to Notifly
@@ -28,8 +37,42 @@ Migrate Braze SDK integrations to Notifly SDK and Remote MCP-based operational w
 
 ## Installation
 
+Install the full skill package:
+
 ```bash
 npx skills add notifly-tech/skills
+```
+
+Install all skills to all supported agents without prompts:
+
+```bash
+npx skills add notifly-tech/skills --all
+```
+
+List the individual skills available in this repository:
+
+```bash
+npx skills add notifly-tech/skills --list
+```
+
+To install only specific skills, pass the **skill name** after `--skill`.
+
+```bash
+# Install only the Notifly SDK integration skill
+npx skills add notifly-tech/skills --skill notifly-integration
+
+# Install only the Braze → Notifly migration skill
+npx skills add notifly-tech/skills --skill migrate-from-braze
+
+# Install multiple specific skills at once
+npx skills add notifly-tech/skills --skill notifly-integration migrate-from-braze
+```
+
+You can combine individual skill installation with standard `npx skills` scope/agent options.
+
+```bash
+npx skills add notifly-tech/skills --skill migrate-from-braze --agent claude-code
+npx skills add notifly-tech/skills --skill migrate-from-braze --global
 ```
 
 ## Usage
