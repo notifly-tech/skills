@@ -8,18 +8,71 @@ AI 코딩 에이전트를 위한 스킬 모음입니다. 스킬은 에이전트�
 
 ### notifly-integration
 
-iOS, Android, Flutter, React Native 프로젝트에 노티플라이 모바일 SDK를 통합하고 노티플라이 MCP 서버를 함께 구성해 주는 스킬입니다.
+- 실제 스킬 이름: `notifly-integration`
+- 표시 이름: `SDK Integration`
+- 경로: `skills/integration`
+
+노티플라이 SDK를 Mobile(iOS/Android/Flutter/React Native) 및 Web(JavaScript/Google Tag Manager) 프로젝트에 연동하고, 필요 시 Notifly MCP 설정과 검증 흐름까지 안내하는 스킬입니다.
 
 **사용 시기:**
-- 새 프로젝트에 노티플라이 SDK를 연동할 때
-- 기존 프로젝트에 노티플라이 푸시 알림을 추가할 때
-- iOS, Android, Flutter, React Native 환경에서 SDK를 설정할 때
+- 새 프로젝트에 Notifly SDK를 연동할 때
+- 기존 프로젝트에 푸시 알림, 인앱 팝업, 웹 팝업, 유저 식별, 유저 프로퍼티, 이벤트 트래킹을 추가할 때
+- iOS, Android, Flutter, React Native, Web, Google Tag Manager 환경에서 SDK를 설정할 때
+- Notifly MCP를 함께 구성하거나 SDK 연동 상태를 검증할 때
+
+### migrate-from-braze
+
+- 실제 스킬 이름: `migrate-from-braze`
+- 표시 이름: `Migrate from Braze to Notifly`
+- 경로: `skills/migrate-from-braze`
+
+Braze SDK 연동을 Notifly SDK와 Remote MCP 기반 운영 흐름으로 이전하는 스킬입니다. iOS(Swift), Android(Kotlin/Java), Flutter, React Native, Expo, Web을 지원합니다.
+
+**사용 시기:**
+- Braze에서 Notifly로 CRM/푸시/인앱 SDK를 이전할 때
+- Braze를 완전히 제거할지, 일정 기간 Notifly와 공존시킬지 먼저 결정해야 할 때
+- SDK 연동 전 MCP event/property catalog가 비어 있을 수 있음을 고려해 Braze 코드 기준 목표 catalog를 만들 때
+- 플랫폼별 Braze 이벤트·유저 속성·푸시 클릭·인앱 흐름을 Notifly SDK/MCP 기반으로 매핑할 때
 
 
 ## 설치
 
+전체 스킬을 설치하려면 다음 명령을 사용합니다.
+
 ```bash
 npx skills add notifly-tech/skills
+```
+
+프롬프트 없이 모든 스킬을 모든 지원 에이전트에 설치하려면:
+
+```bash
+npx skills add notifly-tech/skills --all
+```
+
+설치 가능한 개별 스킬 이름을 확인하려면:
+
+```bash
+npx skills add notifly-tech/skills --list
+```
+
+개별 스킬만 설치하려면 `--skill` 뒤에 위의 **실제 스킬 이름**을 지정합니다.
+
+```bash
+# Notifly SDK 신규 연동 스킬만 설치
+npx skills add notifly-tech/skills --skill notifly-integration
+
+# Braze → Notifly 마이그레이션 스킬만 설치
+npx skills add notifly-tech/skills --skill migrate-from-braze
+
+# 여러 개별 스킬을 한 번에 설치
+npx skills add notifly-tech/skills --skill notifly-integration migrate-from-braze
+```
+
+특정 에이전트 또는 전역 범위에 설치하려면 `npx skills`의 표준 옵션을 함께 사용할 수 있습니다.
+
+```bash
+npx skills add notifly-tech/skills --skill migrate-from-braze --agent claude-code
+npx skills add notifly-tech/skills --skill migrate-from-braze --global
 ```
 
 ## 사용법

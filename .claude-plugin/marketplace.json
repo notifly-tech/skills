@@ -15,6 +15,13 @@
       "source": "./",
       "strict": false,
       "skills": ["./skills/integration"]
+    },
+    {
+      "name": "migrate-from-braze",
+      "description": "Migrates Braze SDK integrations to Notifly across iOS, Android, Flutter, React Native, Expo, and Web. Use when the user asks to migrate, replace, coexist, or churn Braze in favor of Notifly.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/migrate-from-braze"]
     }
   ]
 }
