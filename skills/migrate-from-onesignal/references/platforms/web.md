@@ -23,18 +23,22 @@ Key points from docs:
 
 - Web push requires VAPID key and HTTPS/browser permission setup
 - A service worker file must be served from the expected path and must not be swallowed by the bundler
+- Browser projects use `notifly-js-sdk` (not the React Native `notifly-sdk` package)
 - Package install or CDN script are both possible depending on app architecture
-- `serviceWorkerPath` must match the deployed service worker path
+- SDK 2.5+ initialization requires the compatibility `password` field, but the value is not used; pass `username` or an empty project-approved dummy value, not a real secret
+- Web push service worker path/scope is configured in the Notifly console/server-side website SDK configuration; do not add top-level `serviceWorkerPath` to current browser SDK initialization unless explicitly supporting legacy SDK 2.4 or below
+- The configured service worker path must match the deployed JavaScript service worker file
 
 Core APIs:
 
 ```ts
-import notifly from 'notifly-sdk';
+import notifly from 'notifly-js-sdk';
 
 notifly.initialize({
   projectId: 'PROJECT_ID',
   username: 'USERNAME',
-  serviceWorkerPath: '/notifly-service-worker.js',
+  // Compatibility placeholder only. Do not put a real password/API secret here.
+  password: 'USERNAME',
 });
 
 notifly.setUserId('user_123');
@@ -47,10 +51,10 @@ Service worker:
 
 ```js
 // public/notifly-service-worker.js
-self.importScripts('https://sdk.notifly.tech/notifly-service-worker.js');
+self.importScripts('https://cdn.jsdelivr.net/npm/notifly-js-sdk@2/dist/NotiflyServiceWorker.js');
 ```
 
-Always confirm the current official script URL/path in `/ko/developer-guide/javascript-sdk` before changing production code.
+Always confirm the current official package, initialization contract, and service-worker bundle URL/path in `/ko/developer-guide/javascript-sdk` before changing production code.
 
 ## Mapping
 

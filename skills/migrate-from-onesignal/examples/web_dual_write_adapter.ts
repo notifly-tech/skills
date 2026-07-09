@@ -1,4 +1,4 @@
-import notifly from 'notifly-sdk';
+import notifly from 'notifly-js-sdk';
 
 type JsonMap = Record<string, unknown>;
 
@@ -22,11 +22,12 @@ export class OneSignalNotiflyWebDualWriteAdapter {
     window.OneSignalDeferred.push(callback);
   }
 
-  initializeNotifly(params: { projectId: string; username: string; serviceWorkerPath: string }) {
+  initializeNotifly(params: { projectId: string; username: string; password?: string }) {
     notifly.initialize({
       projectId: params.projectId,
       username: params.username,
-      serviceWorkerPath: params.serviceWorkerPath,
+      // Compatibility placeholder only. Do not put a real password/API secret here.
+      password: params.password ?? params.username,
     });
   }
 
