@@ -34,6 +34,20 @@ Braze SDK 연동을 Notifly SDK와 Remote MCP 기반 운영 흐름으로 이전�
 - SDK 연동 전 MCP event/property catalog가 비어 있을 수 있음을 고려해 Braze 코드 기준 목표 catalog를 만들 때
 - 플랫폼별 Braze 이벤트·유저 속성·푸시 클릭·인앱 흐름을 Notifly SDK/MCP 기반으로 매핑할 때
 
+### migrate-from-onesignal
+
+- 실제 스킬 이름: `migrate-from-onesignal`
+- 표시 이름: `Migrate from OneSignal to Notifly`
+- 경로: `skills/migrate-from-onesignal`
+
+OneSignal SDK 연동을 Notifly SDK와 Remote MCP 기반 운영 흐름으로 이전하는 스킬입니다. iOS(Swift), Android(Kotlin/Java), Flutter, React Native, Expo, Web을 지원합니다.
+
+**사용 시기:**
+- OneSignal에서 Notifly로 CRM/푸시/인앱 SDK를 이전할 때
+- OneSignal을 완전히 제거할지, 일정 기간 Notifly와 공존시킬지 먼저 결정해야 할 때
+- OneSignal User Model(`login`, Tags, Custom Events, Subscriptions)과 구형 API를 구분해 목표 catalog를 만들 때
+- Web service worker, Expo plugin, iOS NSE/App Group, Android FCM service 등 OneSignal SDK 구조를 확인하며 Notifly로 매핑할 때
+
 
 ## 설치
 
@@ -64,14 +78,18 @@ npx skills add notifly-tech/skills --skill notifly-integration
 # Braze → Notifly 마이그레이션 스킬만 설치
 npx skills add notifly-tech/skills --skill migrate-from-braze
 
+# OneSignal → Notifly 마이그레이션 스킬만 설치
+npx skills add notifly-tech/skills --skill migrate-from-onesignal
+
 # 여러 개별 스킬을 한 번에 설치
-npx skills add notifly-tech/skills --skill notifly-integration migrate-from-braze
+npx skills add notifly-tech/skills --skill notifly-integration migrate-from-braze migrate-from-onesignal
 ```
 
 특정 에이전트 또는 전역 범위에 설치하려면 `npx skills`의 표준 옵션을 함께 사용할 수 있습니다.
 
 ```bash
 npx skills add notifly-tech/skills --skill migrate-from-braze --agent claude-code
+npx skills add notifly-tech/skills --skill migrate-from-onesignal --agent claude-code
 npx skills add notifly-tech/skills --skill migrate-from-braze --global
 ```
 
@@ -88,6 +106,9 @@ npx skills add notifly-tech/skills --skill migrate-from-braze --global
 ```
 ```
 노티플라이 SDK 연동 상태를 확인해 줘
+```
+```
+OneSignal에서 노티플라이로 마이그레이션해 줘
 ```
 
 ## 스킬 구조
