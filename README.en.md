@@ -34,6 +34,20 @@ Migrate Braze SDK integrations to Notifly SDK and Remote MCP-based operational w
 - Accounting for empty/limited pre-SDK MCP event/property catalogs by deriving the target catalog from Braze code first
 - Mapping platform-specific Braze events, user attributes, push clicks, and in-app flows to Notifly SDK/MCP workflows
 
+### migrate-from-onesignal
+
+- Skill name: `migrate-from-onesignal`
+- Display name: `Migrate from OneSignal to Notifly`
+- Path: `skills/migrate-from-onesignal`
+
+Migrate OneSignal SDK integrations to Notifly SDK and Remote MCP-based operating flows. Supports iOS (Swift), Android (Kotlin/Java), Flutter, React Native, Expo, and Web.
+
+**Use when:**
+- Migrating CRM, push, or in-app SDK flows from OneSignal to Notifly
+- Deciding between complete OneSignal removal and temporary OneSignal/Notifly coexistence
+- Building a target catalog from OneSignal User Model APIs (`login`, Tags, Custom Events, Subscriptions) and legacy APIs
+- Mapping OneSignal SDK structure such as web service workers, Expo plugins, iOS NSE/App Groups, and Android FCM services to Notifly
+
 
 ## Installation
 
@@ -64,14 +78,18 @@ npx skills add notifly-tech/skills --skill notifly-integration
 # Install only the Braze → Notifly migration skill
 npx skills add notifly-tech/skills --skill migrate-from-braze
 
+# Install only the OneSignal → Notifly migration skill
+npx skills add notifly-tech/skills --skill migrate-from-onesignal
+
 # Install multiple specific skills at once
-npx skills add notifly-tech/skills --skill notifly-integration migrate-from-braze
+npx skills add notifly-tech/skills --skill notifly-integration migrate-from-braze migrate-from-onesignal
 ```
 
 You can combine individual skill installation with standard `npx skills` scope/agent options.
 
 ```bash
 npx skills add notifly-tech/skills --skill migrate-from-braze --agent claude-code
+npx skills add notifly-tech/skills --skill migrate-from-onesignal --agent claude-code
 npx skills add notifly-tech/skills --skill migrate-from-braze --global
 ```
 
@@ -88,6 +106,9 @@ Set up Notifly push notifications
 ```
 ```
 Verify my Notifly SDK integration
+```
+```
+Migrate from OneSignal to Notifly
 ```
 
 ## Skill Structure
