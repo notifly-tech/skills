@@ -1,0 +1,13 @@
+{
+  "name": "notifly-mcp",
+  "description": "Connects the Notifly Remote MCP (https://api.notifly.tech/mcp) over OAuth so agents can inspect Notifly projects, campaigns, user journeys, and user state, and draft campaigns/journeys. Read and draft only — no production sends, activation, or deletes.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Grey Box, Co., Ltd",
+    "email": "contact@greyboxhq.com"
+  },
+  "homepage": "https://docs.notifly.tech/ko/devtools/notifly-remote-mcp",
+  "repository": "https://github.com/notifly-tech/skills",
+  "license": "Apache-2.0",
+  "keywords": ["notifly", "mcp", "crm", "campaign", "messaging"]
+}

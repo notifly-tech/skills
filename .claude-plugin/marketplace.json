@@ -10,6 +10,12 @@
   },
   "plugins": [
     {
+      "name": "notifly-mcp",
+      "description": "Connects the Notifly Remote MCP (https://api.notifly.tech/mcp) over OAuth so agents can inspect Notifly projects, campaigns, user journeys, and user state, and draft campaigns/journeys. Read and draft only.",
+      "source": "./plugins/notifly-mcp",
+      "strict": false
+    },
+    {
       "name": "notifly-integration",
       "description": "Integrates Notifly SDK into iOS/Android/Flutter/React Native projects. Use when the user asks to install/setup/integrate Notifly, or when the user types \"notifly-integration\".",
       "source": "./",
